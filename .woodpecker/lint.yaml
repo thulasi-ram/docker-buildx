@@ -29,7 +29,7 @@ steps:
       event: pull_request
 
   lint-format:
-    image: golang:1.22
+    image: golang:1.23
     depends_on: []
     commands: make formatcheck
     when:

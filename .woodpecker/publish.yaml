@@ -6,7 +6,7 @@ when:
       - renovate/*
 
 variables:
-  - &golang "golang:1.22"
+  - &golang "golang:1.23"
   - &build_plugin "woodpeckerci/plugin-docker-buildx:4.2.0"
   - base_settings: &base_buildx_settings
       platforms: "linux/amd64,linux/arm64"
