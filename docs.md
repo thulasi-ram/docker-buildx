@@ -59,12 +59,15 @@ If it's not a tag event, and no default branch, automated tags are skipped.
 ```yaml
 publish-next-agent:
   image: woodpeckerci/plugin-docker-buildx
-  secrets: [docker_username, docker_password]
   settings:
     repo: woodpeckerci/woodpecker-agent
     dockerfile: docker/Dockerfile.agent.multiarch
     platforms: windows/amd64,darwin/amd64,darwin/arm64,freebsd/amd64,linux/amd64,linux/arm64/v8
     tag: next
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
   when:
     branch: ${CI_REPO_DEFAULT_BRANCH}
     event: push
