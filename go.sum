@@ -94,8 +94,8 @@ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-github.com/urfave/cli/v3 v3.0.0-alpha9.0.20240826114241-3d76e1b39adf h1:L0aWxA1cTFeQlpD/FL6miz8Jqxgg0+j6pYZY9DiUgAQ=
-github.com/urfave/cli/v3 v3.0.0-alpha9.0.20240826114241-3d76e1b39adf/go.mod h1:Z1ItyMma7t6I7zHG9OpbExhHQOSkFf/96n+mAZ9MtVI=
+github.com/urfave/cli/v3 v3.0.0-alpha9.0.20240901123629-31c5c841e98f h1:NLtJkwEq8wijGw/t5340pm/SRM2loRQ6m+2IRaM+8eM=
+github.com/urfave/cli/v3 v3.0.0-alpha9.0.20240901123629-31c5c841e98f/go.mod h1:Z1ItyMma7t6I7zHG9OpbExhHQOSkFf/96n+mAZ9MtVI=
 github.com/xanzy/ssh-agent v0.3.3 h1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=
 github.com/xanzy/ssh-agent v0.3.3/go.mod h1:6dzNDKs0J9rVPHPhaGCukekBHKqfl+L3KghI1Bc68Uw=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
