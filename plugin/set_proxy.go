@@ -3,6 +3,7 @@ package plugin
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func (p *Plugin) applyProxyConf() error {
@@ -30,13 +31,13 @@ func (p *Plugin) applyProxyConf() error {
 	}
 
 	// add driver-opt http config to tell buildkit + buildx to resolve external checksums through a proxy.
-	if p.settings.ProxyConf.Http != "" {
+	if p.settings.ProxyConf.Http != "" && !prefixExistInList(p.settings.Daemon.BuildkitDriverOpt, "env.http_proxy=") {
 		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("env.http_proxy=%s", p.settings.ProxyConf.Http))
 	}
-	if p.settings.ProxyConf.Https != "" {
+	if p.settings.ProxyConf.Https != "" && !prefixExistInList(p.settings.Daemon.BuildkitDriverOpt, "env.https_proxy=") {
 		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("env.https_proxy=%s", p.settings.ProxyConf.Https))
 	}
-	if p.settings.ProxyConf.No != "" {
+	if p.settings.ProxyConf.No != "" && !prefixExistInList(p.settings.Daemon.BuildkitDriverOpt, "env.no_proxy=") {
 		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("env.no_proxy=%s", p.settings.ProxyConf.No))
 	}
 
@@ -52,4 +53,13 @@ func (p *Plugin) applyProxyConf() error {
 	}
 
 	return nil
+}
+
+func prefixExistInList(list []string, prefix string) bool {
+	for i := range list {
+		if strings.HasPrefix(strings.ToLower(strings.TrimSpace(list[i])), prefix) {
+			return true
+		}
+	}
+	return false
 }
