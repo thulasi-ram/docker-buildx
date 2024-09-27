@@ -31,11 +31,22 @@ func commandInfo() *exec.Cmd {
 	return exec.Command(dockerExe, "info")
 }
 
-func commandBuilder(daemon Daemon) *exec.Cmd {
+func commandBuilder(daemon Daemon, host string, append_builder bool) *exec.Cmd {
 	args := []string{
 		"buildx",
 		"create",
+		"--name",
+		"builder",
 		"--use",
+	}
+
+	if host != "" && host != "local" {
+		args = append(args, "--driver=docker-container")
+		args = append(args, "ssh://"+host)
+	}
+
+	if append_builder {
+		args = append(args, "--append")
 	}
 
 	if daemon.BuildkitConfig != "" {

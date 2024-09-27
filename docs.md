@@ -20,6 +20,7 @@ This plugin is a fork of [thegeeklab/drone-docker-buildx](https://github.com/the
 - Use custom registries
 - Build based on existing tags when needed
 - Push to multiple registries/repos
+- Use remote builders
 
 It will automatically generate buildkit configuration to use custom CA certificate if following conditions are met:
 
@@ -47,6 +48,8 @@ To mount custom CA certificates, the Woodpecker env var `WOODPECKER_BACKEND_DOCK
 | `tag`/`tags`            | _none_                        | sets repository tags to use for the image          |
 | `platforms`             | _none_                        | sets target platform for build                     |
 | `provenance`            | _none_                        | sets provenance for build                          |
+| `remote-builders`       | _none_                        | sets remote builders for build                     |
+| `ssh-key`               | _none_                        | sets an ssh key to connect to remote builders      |
 
 ## auto_tag
 
@@ -253,4 +256,38 @@ steps:
       repo: hari/radiant
       cache_to: type=s3,region=east,bucket=mystuff,name=radiant-cache
       cache_from: type=s3,region=east,bucket=mystuff,name=radiant-cache
+```
+
+## Using remote builders
+
+When building for multiple platforms, you might want to offload some builds to a remote server, to avoid emulation.
+To support this, provide a list build servers to `remote-builders`.
+These servers will need key authentication, so you will also need to provide a (private) SSH key.
+
+```yaml
+build:
+  image: woodpeckerci/plugin-docker-buildx
+  settings:
+    platforms: linux/amd64,linux/arm64
+    repo: codeberg.org/${CI_REPO_OWNER}/hello
+    registry: codeberg.org
+    dry-run: true
+    ssh-key:
+      from_secret: ssh_key
+    remote-builders: root@my-amd64-build-server,root@my-arm64-build-server
+```
+
+If you want to mix local and remote builders, the list can include "local":
+
+```yaml
+build:
+  image: woodpeckerci/plugin-docker-buildx
+  settings:
+    platforms: linux/amd64,linux/arm64
+    repo: codeberg.org/${CI_REPO_OWNER}/hello
+    registry: codeberg.org
+    dry-run: true
+    ssh-key:
+      from_secret: ssh_key
+    remote-builders: local,root@my-arm64-build-server
 ```

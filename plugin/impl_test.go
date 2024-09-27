@@ -108,3 +108,25 @@ func TestWriteBuildkitConfig(t *testing.T) {
 	assert.NoError(t, newSettingsOnly(&settings).Validate())
 	assert.EqualValues(t, fmt.Sprintf("[registry]\n[registry.'codeberg.org']\nca = ['%s/codeberg.org/ca.crt']\n", tmpDir), settings.Daemon.BuildkitConfig)
 }
+
+func TestSshKey(t *testing.T) {
+	settings := defaultTestSettings
+	settings.Daemon.SshKey = "bogus SSH content\n"
+	assert.NoError(t, newSettingsOnly(&settings).Validate())
+}
+
+func TestRemoteBuilders(t *testing.T) {
+	settings := defaultTestSettings
+	settings.Daemon.RemoteBuilders = []string{"local"}
+	assert.NoError(t, newSettingsOnly(&settings).Validate())
+
+	settings = defaultTestSettings
+	settings.Daemon.RemoteBuilders = []string{"root@example.com"}
+	assert.NoError(t, newSettingsOnly(&settings).Validate())
+
+	settings.Daemon.RemoteBuilders = []string{"local", "root@example.com"}
+	assert.NoError(t, newSettingsOnly(&settings).Validate())
+
+	settings.Daemon.RemoteBuilders = []string{"root@example.org", "root@example.com"}
+	assert.NoError(t, newSettingsOnly(&settings).Validate())
+}

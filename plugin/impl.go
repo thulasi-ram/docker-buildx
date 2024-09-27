@@ -34,6 +34,8 @@ type Daemon struct {
 	BuildkitConfig    string   // Docker buildkit config
 	BuildkitDriverOpt []string // Docker buildkit driveropt args
 	BuildkitDebug     bool     // Docker buildkit debug setting
+	SshKey            string   // Docker daemon SSH key
+	RemoteBuilders    []string // Remote builders for buildx to use
 }
 
 // Login defines Docker login parameters.
@@ -333,6 +335,36 @@ func (p *Plugin) writeBuildkitConfig() error {
 	return nil
 }
 
+// Lookup Host keys and add them to known_hosts if new
+func addToKnownHosts(host string) error {
+	if host == "local" {
+		return nil
+	}
+	// make sure we only use a host
+	host_slice := strings.Split(host, "@")
+	host = host_slice[len(host_slice)-1]
+
+	if err := os.MkdirAll("/root/.ssh", 0o700); err != nil {
+		return fmt.Errorf("error creating /root/.ssh dir: %s", err)
+	}
+
+	khFile, err := os.OpenFile("/root/.ssh/known_hosts", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		return fmt.Errorf("error opening known_hosts file: %s", err)
+	}
+	defer khFile.Close()
+
+	cmd := exec.Command("/usr/bin/ssh-keyscan", host)
+	cmd.Stdout = khFile
+	cmd.Stderr = os.Stderr
+	trace(cmd)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("error writing known_hosts file: %s", err)
+	}
+
+	return nil
+}
+
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
 	// start the Docker daemon server
@@ -394,10 +426,38 @@ func (p *Plugin) Execute() error {
 	// add proxy build args
 	addProxyBuildArgs(&p.settings.Build)
 
+	// add optional SSH key
+	if p.settings.Daemon.SshKey != "" {
+		if err := os.MkdirAll("/root/.ssh", 0o700); err != nil {
+			return fmt.Errorf("error creating /root/.ssh dir: %s", err)
+		}
+		// make sure the key ends with a newline
+		if !strings.HasSuffix(p.settings.Daemon.SshKey, "\n") {
+			p.settings.Daemon.SshKey = strings.Join(
+				append(strings.Split(p.settings.Daemon.SshKey, "\n"), "\n"),
+				"\n",
+			)
+		}
+		if err := os.WriteFile("/root/.ssh/id_rsa", []byte(p.settings.Daemon.SshKey), 0o600); err != nil {
+			return fmt.Errorf("error writing SSH key: %s", err)
+		}
+	}
+
 	var cmds []*exec.Cmd
-	cmds = append(cmds, commandVersion()) // docker version
-	cmds = append(cmds, commandInfo())    // docker info
-	cmds = append(cmds, commandBuilder(p.settings.Daemon))
+	cmds = append(cmds, commandVersion())           // docker version
+	cmds = append(cmds, commandInfo())              // docker info
+	if len(p.settings.Daemon.RemoteBuilders) == 0 { // no remote builder, create a local one
+		cmds = append(cmds, commandBuilder(p.settings.Daemon, "local", false))
+	} else {
+		append_builder := false // don't append for the first builder
+		for _, host := range p.settings.Daemon.RemoteBuilders {
+			if err := addToKnownHosts(host); err != nil {
+				return err
+			}
+			cmds = append(cmds, commandBuilder(p.settings.Daemon, host, append_builder))
+			append_builder = true // to add subsequent builders we need to append
+		}
+	}
 	cmds = append(cmds, commandBuildx())
 	cmds = append(cmds, commandBuild(p.settings.Build, p.settings.Dryrun)) // docker build
 	if !p.settings.Dryrun && p.settings.Build.Output != "" &&
