@@ -388,5 +388,11 @@ func settingsFlags(settings *plugin.Settings) []cli.Flag {
 			Usage:       "sets the NO_PROXY env",
 			Destination: &settings.ProxyConf.No,
 		},
+		&cli.StringFlag{
+			Name:        "sbom",
+			Sources:     cli.EnvVars("PLUGIN_SBOM"),
+			Usage:       "defines sbom setting",
+			Destination: &settings.Build.Sbom,
+		},
 	}
 }

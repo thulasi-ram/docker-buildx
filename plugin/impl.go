@@ -84,6 +84,7 @@ type Build struct {
 	Quiet           bool     // Docker build quiet
 	Epoch           int64    // Docker build epoch
 	Provenance      string   // Docker build provenance
+	Sbom            string   // Docker build sbom
 }
 
 type ProxyConf struct {

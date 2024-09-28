@@ -142,6 +142,9 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 	if build.Provenance != "" {
 		args = append(args, "--provenance", build.Provenance)
 	}
+	if build.Sbom != "" {
+		args = append(args, "--sbom", build.Sbom)
+	}
 
 	if len(build.Platforms) > 0 {
 		args = append(args, "--platform", strings.Join(build.Platforms[:], ","))
