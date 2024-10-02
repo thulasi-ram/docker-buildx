@@ -38,7 +38,7 @@ func (p *Plugin) applyProxyConf() error {
 		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("env.https_proxy=%s", p.settings.ProxyConf.Https))
 	}
 	if p.settings.ProxyConf.No != "" && !prefixExistInList(p.settings.Daemon.BuildkitDriverOpt, "env.no_proxy=") {
-		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("env.no_proxy=%s", p.settings.ProxyConf.No))
+		p.settings.Daemon.BuildkitDriverOpt = append(p.settings.Daemon.BuildkitDriverOpt, fmt.Sprintf("\"env.no_proxy=%s\"", p.settings.ProxyConf.No))
 	}
 
 	// passthrough proxy config to the build process and Dockerfile CMDs itself.
@@ -49,7 +49,7 @@ func (p *Plugin) applyProxyConf() error {
 		p.settings.Build.Args = append(p.settings.Build.Args, fmt.Sprintf("HTTPS_PROXY=%s", p.settings.ProxyConf.Https))
 	}
 	if p.settings.ProxyConf.No != "" {
-		p.settings.Build.Args = append(p.settings.Build.Args, fmt.Sprintf("NO_PROXY=%s", p.settings.ProxyConf.No))
+		p.settings.Build.Args = append(p.settings.Build.Args, fmt.Sprintf("NO_PROXY='%s'", p.settings.ProxyConf.No))
 	}
 
 	return nil
