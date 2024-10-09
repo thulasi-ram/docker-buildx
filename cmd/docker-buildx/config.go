@@ -7,7 +7,7 @@ import (
 
 // settingsFlags has the cli.Flags for the plugin.Settings.
 func settingsFlags(settings *plugin.Settings) []cli.Flag {
-	return []cli.Flag{
+	flags := []cli.Flag{
 		&cli.BoolFlag{
 			Name:        "dry-run",
 			Sources:     cli.EnvVars("PLUGIN_DRY_RUN"),
@@ -105,23 +105,11 @@ func settingsFlags(settings *plugin.Settings) []cli.Flag {
 			Usage:       "adds remote builders to be used by buildx",
 			Destination: &settings.Daemon.RemoteBuilders,
 		},
-		&cli.StringFlag{
-			Name:        "daemon.buildkit-config",
-			Sources:     cli.EnvVars("PLUGIN_BUILDKIT_CONFIG"),
-			Usage:       "sets content of the docker buildkit json config",
-			Destination: &settings.Daemon.BuildkitConfig,
-		},
 		&cli.BoolFlag{
 			Name:        "daemon.buildkit-debug",
 			Sources:     cli.EnvVars("PLUGIN_BUILDKIT_DEBUG"),
 			Usage:       "enables buildkit debug",
 			Destination: &settings.Daemon.BuildkitDebug,
-		},
-		&cli.StringSliceFlag{
-			Name:        "daemon.buildkit-driveropt",
-			Sources:     cli.EnvVars("PLUGIN_BUILDKIT_DRIVEROPT"),
-			Usage:       "adds optional driver-ops args like 'env.http_proxy'",
-			Destination: &settings.Daemon.BuildkitDriverOpt,
 		},
 		&cli.StringFlag{
 			Name:        "dockerfile",
@@ -395,4 +383,22 @@ func settingsFlags(settings *plugin.Settings) []cli.Flag {
 			Destination: &settings.Build.Sbom,
 		},
 	}
+
+	if Insecure {
+		flags = append(flags,
+			&cli.StringFlag{
+				Name:        "daemon.buildkit-config",
+				Sources:     cli.EnvVars("PLUGIN_BUILDKIT_CONFIG"),
+				Usage:       "sets content of the docker buildkit json config",
+				Destination: &settings.Daemon.BuildkitConfig,
+			},
+			&cli.StringSliceFlag{
+				Name:        "daemon.buildkit-driveropt",
+				Sources:     cli.EnvVars("PLUGIN_BUILDKIT_DRIVEROPT"),
+				Usage:       "adds optional driver-ops args like 'env.http_proxy'",
+				Destination: &settings.Daemon.BuildkitDriverOpt,
+			})
+	}
+
+	return flags
 }

@@ -5,6 +5,15 @@ when:
       - ${CI_REPO_DEFAULT_BRANCH}
       - renovate/*
 
+matrix:
+  include:
+    - INSECURE: "false"
+      TAG: "latest"
+      TAG_SUFFIX: ""
+    - INSECURE: "true"
+      TAG: "latest-insecure"
+      TAG_SUFFIX: "insecure"
+
 variables:
   - &golang "golang:1.23"
   - &build_plugin "woodpeckerci/plugin-docker-buildx:4.2.0"
@@ -12,7 +21,10 @@ variables:
       platforms: "linux/amd64,linux/arm64"
       dockerfile: Dockerfile
       auto_tag: true
+      tag: ${TAG}
+      default_suffix: ${TAG_SUFFIX}
       repo: woodpeckerci/plugin-docker-buildx,codeberg.org/woodpecker-plugins/docker-buildx
+      build_args: INSECURE=${INSECURE}
   - &login_setting # Default DockerHub login
     - registry: https://index.docker.io/v1/
       username:
@@ -34,7 +46,7 @@ steps:
   test:
     image: *golang
     depends_on: vendor
-    commands: go test -cover ./...
+    commands: make test
 
   publish-dryrun:
     image: *build_plugin

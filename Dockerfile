@@ -7,7 +7,7 @@ FROM --platform=$BUILDPLATFORM golang:${GOLANG_VERSION} AS build
 COPY . /src
 WORKDIR /src
 
-ARG TARGETOS TARGETARCH
+ARG TARGETOS TARGETARCH INSECURE
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg \
     make build
