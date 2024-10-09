@@ -65,6 +65,5 @@ Temporary Items
 plugin-docker-buildx
 
 coverage.out
-CHANGELOG.md
 debug.test*
 node_modules/
