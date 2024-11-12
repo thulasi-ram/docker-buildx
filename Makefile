@@ -25,6 +25,11 @@ install-tools: ## Install development tools
 		go install mvdan.cc/gofumpt@latest; \
 	fi
 
+.PHONY: vendor
+vendor:
+	go mod tidy
+	go mod vendor
+
 .PHONY: test
 test:
 	go test -tags netgo,${INSECURE_TAG} -cover ./...
