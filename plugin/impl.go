@@ -69,6 +69,7 @@ type Build struct {
 	Labels          []string // Docker build labels
 	Platforms       []string // Docker build target platforms
 	Args            []string // Docker build args
+	ArgsRaw         string   // Docker build args unparsed
 	ArgsEnv         []string // Docker build args from env
 	Secrets         []string // Docker build secret
 	Target          string   // Docker build target
@@ -120,12 +121,51 @@ func (l Login) anonymous() bool {
 	return l.Username == "" || l.Password == ""
 }
 
+func (p *Plugin) parseBuildArgs() error {
+	if argsRaw := strings.TrimSpace(p.settings.Build.ArgsRaw); argsRaw != "" {
+		// ok we got json map so handle it
+		if argsRaw[0] == '{' {
+			args := make(map[string]string)
+			if err := json.Unmarshal([]byte(argsRaw), &args); err != nil {
+				return fmt.Errorf("could not unmarshal build-args: %v", err)
+			} else {
+				for k, v := range args {
+					p.settings.Build.Args = append(p.settings.Build.Args,
+						fmt.Sprintf("%s=%s", k, v),
+					)
+				}
+			}
+			return nil
+		}
+
+		// ok we got json list so handle it
+		if argsRaw[0] == '[' {
+			if err := json.Unmarshal([]byte(argsRaw), &p.settings.Build.Args); err != nil {
+				return fmt.Errorf("could not unmarshal build-args: %v", err)
+			}
+			return nil
+		}
+
+		// it's a simple comma separated list
+		for _, arg := range strings.Split(p.settings.Build.ArgsRaw, ",") {
+			p.settings.Build.Args = append(p.settings.Build.Args,
+				strings.TrimSpace(arg),
+			)
+		}
+	}
+	return nil
+}
+
 // Init initialise plugin settings
 func (p *Plugin) InitSettings() error {
 	if p.settings.LoginsRaw != "" {
 		if err := json.Unmarshal([]byte(p.settings.LoginsRaw), &p.settings.Logins); err != nil {
 			return fmt.Errorf("could not unmarshal logins: %v", err)
 		}
+	}
+
+	if err := p.parseBuildArgs(); err != nil {
+		return err
 	}
 
 	if err := p.applyProxyConf(); err != nil {

@@ -174,11 +174,11 @@ func settingsFlags(settings *plugin.Settings) []cli.Flag {
 			Value:       true,
 			Destination: &settings.Build.LabelsAuto,
 		},
-		&cli.StringSliceFlag{
+		&cli.StringFlag{
 			Name:        "args",
 			Sources:     cli.EnvVars("PLUGIN_BUILD_ARGS"),
 			Usage:       "sets custom build arguments for the build",
-			Destination: &settings.Build.Args,
+			Destination: &settings.Build.ArgsRaw,
 		},
 		&cli.StringSliceFlag{
 			Name:        "args-from-env",

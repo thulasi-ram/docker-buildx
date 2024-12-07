@@ -130,3 +130,42 @@ func TestRemoteBuilders(t *testing.T) {
 	settings.Daemon.RemoteBuilders = []string{"root@example.org", "root@example.com"}
 	assert.NoError(t, newSettingsOnly(&settings).Validate())
 }
+
+func TestCustomBuildArgs(t *testing.T) {
+	// Test comma separated list
+	settings := defaultTestSettings
+	settings.Build.ArgsRaw = "FOO=bar, BAR=baz"
+	p := newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).InitSettings())
+	assert.Len(t, settings.Build.Args, 2)
+	assert.ElementsMatch(t, settings.Build.Args, []string{"BAR=baz", "FOO=bar"})
+
+	// Test JSON object format map
+	settings = defaultTestSettings
+	settings.Build.ArgsRaw = `{"FOO":"bar","BAR":"baz"}`
+	p = newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).InitSettings())
+	assert.Len(t, settings.Build.Args, 2)
+	assert.ElementsMatch(t, settings.Build.Args, []string{"BAR=baz", "FOO=bar"})
+
+	// Test JSON object format list
+	settings = defaultTestSettings
+	settings.Build.ArgsRaw = `["FOO=bar","BAR=baz"]`
+	p = newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).InitSettings())
+	assert.Len(t, settings.Build.Args, 2)
+	assert.ElementsMatch(t, settings.Build.Args, []string{"BAR=baz", "FOO=bar"})
+
+	// Test empty args
+	settings = defaultTestSettings
+	settings.Build.ArgsRaw = ""
+	p = newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).InitSettings())
+	assert.Len(t, settings.Build.Args, 0)
+
+	// Test invalid JSON
+	settings = defaultTestSettings
+	settings.Build.ArgsRaw = `{"FOO":"bar",BAD}`
+	p = newSettingsOnly(&settings)
+	assert.Error(t, p.(*Plugin).InitSettings())
+}
