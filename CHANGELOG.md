@@ -1,5 +1,41 @@
 # Changelog
 
+## [5.1.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.1.0) - 2024-12-07
+
+### ❤️ Thanks to all contributors! ❤️
+
+@6543, @pat-s, @woodpecker-bot
+
+### 📈 Enhancement
+
+- Allow build-args to get json [[#202](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/202)]
+
+### 📚 Documentation
+
+- Clarify insecure tag [[#200](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/200)]
+
+### 📦️ Dependency
+
+- fix(deps): update module github.com/urfave/cli/v3 to v3.0.0-alpha9.1 [[#199](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/199)]
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v5.0.0 [[#198](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/198)]
+
+### Misc
+
+- chore(deps): update docker/buildx-bin docker tag to v0.19.1 ([5ff83b1](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/5ff83b1454f72ce243b95140fa5f7d8d1193d625))
+- fix(deps): update module github.com/urfave/cli/v3 to v3.0.0-beta1 ([62b3316](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/62b3316cb606bc404a063e705382b9f6a410b45e))
+- chore(deps): update woodpeckerci/plugin-release docker tag to v0.2.2 ([2ff549c](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/2ff549c3c6243863fae9aca26fd6b3a19dee6540))
+- fix(deps): update module github.com/stretchr/testify to v1.10.0 ([ed1d55f](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/ed1d55f533cc6e49c65656adf2bb8484f93f5b5c))
+- chore(deps): update docker/buildx-bin docker tag to v0.18.0 ([43bbfaa](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/43bbfaa0af080b89ae18075d11828d8d7776d0b3))
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v2.1.1 ([faf4a88](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/faf4a889f6f167a23d7a95db99e174b8fa776614))
+- fix(deps): update module github.com/urfave/cli/v3 to v3.0.0-alpha9.4 ([1d723a3](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/1d723a337972a4cc6dc8e13748831cc5c055c7e1))
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.15.0 ([f6bbd6c](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/f6bbd6c1c2a49d5c883ce9cbe76a543ab4762a14))
+- fix(deps): update module github.com/urfave/cli/v3 to v3.0.0-alpha9.3 ([8d3d558](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/8d3d558c0975c074c34af88717a8facc13cfbd55))
+- chore(deps): update dependency go to v1.23.3 ([be45ede](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/be45ede5004f5d4cc7249fb8590acaf6942ff8c9))
+- fix(deps): update golang.org/x/lint digest to 818c5a8 ([cbf2022](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/cbf20222b0c343a827ae19c9f52b33d602a67adf))
+- Add vendor target for make [[#201](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/201)]
+- remove pat-s from maintainers ([b664c37](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/b664c37d62e2bd12683f7769324050942678534b))
+- CI: Dont lint on tag event ([1f4e506](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/1f4e506a190a102c611769e2482442a14e4e131e))
+
 ## [5.0.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.0.0) - 2024-10-09
 
 ### ❤️ Thanks to all contributors! ❤️
