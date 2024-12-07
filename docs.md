@@ -116,8 +116,6 @@ docker-build:
 | `debug`                            | `false`           | enables verbose debug mode for the docker daemon                                                                                                     |
 | `daemon_off`                       | `false`           | disables the startup of the docker daemon                                                                                                            |
 | `buildkit_debug`                   | `false`           | enables debug output of buildkit                                                                                                                     |
-| `buildkit_config`                  | _none_            | Can only be changed for insecure image. Sets content of the docker [buildkit TOML config](https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md)                               |
-| `buildkit_driveropt`               | _none_            | Can only be changed for insecure image. Adds one or multiple `--driver-opt` buildx arguments for the default buildkit builder instance                                                       |
 | `tags_file`                        | _none_            | overrides the `tags` option with values in a file named `.tags`; multiple tags can be specified separated by a newline                               |
 | `context`                          | `.`               | sets the path of the build context to use                                                                                                            |
 | `auto_tag`                         | `false`           | generates tag names automatically based on git branch and git tag, tags supplied via `tags` are additionally added to the `auto_tags` without suffix |
@@ -149,6 +147,17 @@ docker-build:
 | `http_proxy`                       | _none_            | Set an http proxy if needed. It is also forwarded as build arg called "HTTP_PROXY".                                                                  |
 | `https_proxy`                      | _none_            | Set an https proxy if needed. It is also forwarded as build arg called "HTTPS_PROXY".                                                                |
 | `no_proxy`                         | _none_            | Set (sub-)domains to be ignored by proxy settings. It is also forwarded as build arg called "NO_PROXY".                                              |
+
+## Insecure Settings
+
+These settings are only available in the image versions of the plugin that are tagged with the `-insecure` suffix.
+
+Make sure if you allow external contributions, who can trigger to run this plugin, to use the [require approval for](https://woodpecker-ci.org/docs/usage/project-settings#require-approval-for) feature!
+
+| Settings Name                      | Default           | Description                                                                                                                                          |
+| ---------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildkit_config`                  | _none_            | Sets content of the docker [buildkit TOML config](https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md)                               |
+| `buildkit_driveropt`               | _none_            | Adds one or multiple `--driver-opt` buildx arguments for the default buildkit builder instance                                                       |
 
 ## Multi registry push example
 

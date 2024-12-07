@@ -36,4 +36,4 @@ This project is licensed under the Apache-2.0 License - see the [LICENSE](https:
 
 ## Maintainers
 
-This plugin is maintained by @6543 
+This plugin is maintained by @6543
