@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD024 -->
+
 # Changelog
 
 ## [5.1.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.1.0) - 2024-12-07
