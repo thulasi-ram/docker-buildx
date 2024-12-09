@@ -2,7 +2,7 @@ module codeberg.org/woodpecker-plugins/plugin-docker-buildx
 
 go 1.22.1
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	codeberg.org/6543/go-yaml2json v1.0.0
