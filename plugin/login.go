@@ -25,8 +25,10 @@ func (p *Plugin) Login() error {
 // helper function to create the docker login command.
 func commandLogin(login Login) *exec.Cmd {
 	if login.Email != "" {
+		fmt.Printf("Logging in with email '%s'", login.Email)
 		return commandLoginEmail(login)
 	}
+	fmt.Printf("Logging in with username '%s' to registry '%s'", login.Username, login.Registry)
 	return exec.Command(
 		dockerExe, "login",
 		"-u", login.Username,
