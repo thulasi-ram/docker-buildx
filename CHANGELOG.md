@@ -2,6 +2,38 @@
 
 # Changelog
 
+## [5.2.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.0) - 2025-01-20
+
+### ❤️ Thanks to all contributors! ❤️
+
+@pat-s, @woodpecker-bot
+
+### 📈 Enhancement
+
+- Increase login verbosity and consolidate login calls [[#213](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/213)]
+
+### 📦️ Dependency
+
+- chore(deps): update docker docker tag to v27.4.1 [[#209](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/209)]
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.16.0 [[#208](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/208)]
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v5.1.0 [[#207](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/207)]
+- chore(deps): update docker/buildx-bin docker tag to v0.19.2 [[#206](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/206)]
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.1.0 [[#204](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/204)]
+
+### Misc
+
+- chore(deps): update dependency go to v1.23.5 ([e85a6a0](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/e85a6a07a43681abc4987c7f6398176e4ff50a93))
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.17.2 ([fc9ee6c](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/fc9ee6c3d530f67b587cb95e11905c2f4a080102))
+- chore(deps): update docker.io/mstruebing/editorconfig-checker docker tag to v3.1.2 ([d689954](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/d689954ee5afee840d9c3ccb37eeb434c5554325))
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.13.1 ([3e6c614](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/3e6c614b92c907987cf50029eb4512dba44dadd2))
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.17.1 ([9ff0fa6](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/9ff0fa678dccd7fc4be7cace72073b8d5fefd60a))
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.13.0 ([c8666a5](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/c8666a5831ecafa5c60450128f459191cd94c88a))
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.1.1 ([21d4638](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/21d4638a5a7b33a4952fa5a744acbe62aeb5da42))
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.17.0 ([e8b4cb2](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/e8b4cb2ccac59068d38859ce32a39f4ae4ba3069))
+- chore(deps): update docker/buildx-bin docker tag to v0.19.3 ([bd43532](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/bd43532296083a6b66a8336433912696add9e1ee))
+- chore(deps): update docker docker tag to v27.4.0 ([6e77ed7](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/6e77ed7510a1dfd23f35b81affc90ded895515e6))
+- chore(deps): update dependency go to v1.23.4 ([0fda7c8](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/0fda7c869409d40cde5dc291b695651d4102eb30))
+
 ## [5.1.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.1.0) - 2024-12-07
 
 ### ❤️ Thanks to all contributors! ❤️
