@@ -2,6 +2,27 @@
 
 # Changelog
 
+## [5.2.1](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.1) - 2025-02-01
+
+### ❤️ Thanks to all contributors! ❤️
+
+@pat-s, @woodpecker-bot
+
+### 📦️ Dependency
+
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.13.2 [[#219](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/219)]
+- chore(deps): update docker docker tag to v27.5.1 [[#218](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/218)]
+
+### Misc
+
+- chore(deps): update docker.io/mstruebing/editorconfig-checker docker tag to v3.2.0 ([11682ca](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/11682cac837eb3c50682e8b162121f154864c7e9))
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v5.2.0 ([468ad41](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/468ad4155f14f1e735d13e0777b362ec03a2e8fd))
+- chore(deps): update docker/buildx-bin docker tag to v0.20.1 ([8871804](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/88718040aeeef1695f2ce320d75270a1eb7cd824))
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.1.3 [[#216](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/216)]
+- chore(deps): update docker docker tag to v27.5.0 ([d531c9f](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/d531c9ffb9d8b39ed5d1a42b0316fbaddc8de2db))
+- fix(deps): update module github.com/aws/aws-sdk-go to v1.55.6 ([8cf0ca7](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/8cf0ca784520046e054efaae9f9c0c02b4cd4d38))
+- chore(deps): update woodpeckerci/plugin-release docker tag to v0.2.3 ([b44a95c](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/b44a95c8dc90fd62d745d822fd9f15327f97067a))
+
 ## [5.2.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.0) - 2025-01-20
 
 ### ❤️ Thanks to all contributors! ❤️
