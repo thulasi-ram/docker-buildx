@@ -86,7 +86,7 @@ steps:
 
   # TODO: replace by plugin-ready-release-go once it supports gitea
   gitea-release:
-    image: "woodpeckerci/plugin-release:0.2.4"
+    image: "woodpeckerci/plugin-release:0.2.5"
     depends_on: test
     settings:
       title: ${CI_COMMIT_TAG}
