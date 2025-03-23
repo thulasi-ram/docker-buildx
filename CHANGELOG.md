@@ -2,6 +2,34 @@
 
 # Changelog
 
+## [5.2.2](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.2) - 2025-03-23
+
+### ❤️ Thanks to all contributors! ❤️
+
+@woodpecker-bot
+
+### 📦️ Dependency
+
+- chore(deps): update docker.io/mstruebing/editorconfig-checker docker tag to v3.2.1 [[#222](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/222)]
+- chore(deps): update docker docker tag to v28.0.2 [[#223](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/223)]
+- chore(deps): update docker docker tag to v28 [[#221](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/221)]
+
+### Misc
+
+- chore(deps): update woodpeckerci/plugin-release docker tag to v0.2.5 ([11bcfa4](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/11bcfa42c1dd7d0325a86d12263e821341d315b2))
+- chore(deps): update docker/buildx-bin docker tag to v0.22.0 ([53425fe](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/53425fe5f82d85aa7e111791a4319d0cf37c9903))
+- fix(deps): update module honnef.co/go/tools to v0.6.1 ([1535650](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/15356502e6a30b243c1b61e598df1616032fdca3))
+- chore(deps): update docker/buildx-bin docker tag to v0.21.2 ([fb6965e](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/fb6965ec94e1178ac78affe498b951eeb126a8ff))
+- chore(deps): update dependency go to v1.24.1 ([57d1c08](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/57d1c0839d89da009be83e63e7c8f7870c9649ae))
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.14.0 ([d7fa781](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/d7fa7811aad22ec1d6f1f6da105e9bbf6d4e2f42))
+- chore(deps): update docker docker tag to v28.0.1 ([9f30cda](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/9f30cdaa541e54a6632354a120b1e3d4e1d4f040))
+- chore(deps): update docker/buildx-bin docker tag to v0.21.1 ([e53e0c0](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/e53e0c0e59b27549b2759a3631878946d4d4c1e9))
+- chore(deps): update golang docker tag to v1.24 ([37c4d7e](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/37c4d7e409cd642327695963c83afdfae8d2d8e6))
+- chore(deps): update woodpeckerci/plugin-release docker tag to v0.2.4 ([0f2ecc6](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/0f2ecc6a139192593300174d5e52b43d8172d1ad))
+- fix(deps): update module honnef.co/go/tools to v0.6.0 ([c77be8e](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/c77be8ebe0a653dba9467891ea1df16cdcc97cea))
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v5.2.1 ([820a652](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/820a652e642253d4d224fa0f395f419a59c917eb))
+- chore(deps): update dependency go to v1.23.6 ([e8e3238](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/e8e3238748a5a84f7fa3fb641cdc6b6b5b304675))
+
 ## [5.2.1](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.1) - 2025-02-01
 
 ### ❤️ Thanks to all contributors! ❤️
