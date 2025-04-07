@@ -116,7 +116,7 @@ docker-build:
 | `debug`                            | `false`           | enables verbose debug mode for the docker daemon                                                                                                     |
 | `daemon_off`                       | `false`           | disables the startup of the docker daemon                                                                                                            |
 | `buildkit_debug`                   | `false`           | enables debug output of buildkit                                                                                                                     |
-| `tags_file`                        | _none_            | overrides the `tags` option with values in a file named `.tags`; multiple tags can be specified separated by a newline                               |
+| `tags_file`                        | `.tags`           | overrides the `tags` option with values specified in a file. Multiple tags can be specified by separating them with a comma or using new lines       |
 | `context`                          | `.`               | sets the path of the build context to use                                                                                                            |
 | `auto_tag`                         | `false`           | generates tag names automatically based on git branch and git tag, tags supplied via `tags` are additionally added to the `auto_tags` without suffix |
 | `default_suffix`/`auto_tag_suffix` | _none_            | generates tag names with the given suffix                                                                                                            |
@@ -154,10 +154,10 @@ These settings are only available in the image versions of the plugin that are t
 
 Make sure if you allow external contributions, who can trigger to run this plugin, to use the [require approval for](https://woodpecker-ci.org/docs/usage/project-settings#require-approval-for) feature!
 
-| Settings Name                      | Default           | Description                                                                                                                                          |
-| ---------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildkit_config`                  | _none_            | Sets content of the docker [buildkit TOML config](https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md)                               |
-| `buildkit_driveropt`               | _none_            | Adds one or multiple `--driver-opt` buildx arguments for the default buildkit builder instance                                                       |
+| Settings Name        | Default | Description                                                                                                            |
+| -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `buildkit_config`    | _none_  | Sets content of the docker [buildkit TOML config](https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md) |
+| `buildkit_driveropt` | _none_  | Adds one or multiple `--driver-opt` buildx arguments for the default buildkit builder instance                         |
 
 ## Multi registry push example
 

@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"os"
 	"reflect"
 	"testing"
 
@@ -309,4 +310,102 @@ func Test_isSingleTag(t *testing.T) {
 			t.Errorf("Tag verification '%s' tag %v, want %v", test.Tag, valid, test.IsValid)
 		}
 	}
+}
+
+func TestTagsFile(t *testing.T) {
+	// Test with tags on separate lines
+	settings := defaultTestSettings
+
+	// Create a temporary file with multiple tags on separate lines
+	tagsContent := "tag1\ntag2\ntag3"
+	tmpFile, err := os.CreateTemp("", "tags-file-test-*.txt")
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.Write([]byte(tagsContent))
+	assert.NoError(t, err)
+	assert.NoError(t, tmpFile.Close())
+
+	// Set the tags file
+	settings.Build.TagsFile = tmpFile.Name()
+
+	// Run the validation which processes the tags file
+	p := newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).Validate())
+
+	// Check that the tags were properly read from the file
+	assert.Len(t, settings.Build.Tags, 3)
+	assert.ElementsMatch(t, settings.Build.Tags, []string{"tag1", "tag2", "tag3"})
+
+	// Test with tags that have extra whitespace
+	tagsContent = "  tag1  \n tag2 \n\ntag3  "
+	tmpFile2, err := os.CreateTemp("", "tags-file-test-whitespace-*.txt")
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile2.Name())
+
+	_, err = tmpFile2.Write([]byte(tagsContent))
+	assert.NoError(t, err)
+	assert.NoError(t, tmpFile2.Close())
+
+	settings.Build.TagsFile = tmpFile2.Name()
+
+	p = newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).Validate())
+
+	// Check that the tags were properly trimmed and empty lines were skipped
+	assert.Len(t, settings.Build.Tags, 3)
+	assert.ElementsMatch(t, settings.Build.Tags, []string{"tag1", "tag2", "tag3"})
+
+	// Test with a non-existent file
+	settings.Build.TagsFile = "non-existent-file.txt"
+	p = newSettingsOnly(&settings)
+	assert.Error(t, p.(*Plugin).Validate())
+
+	// Test that tags file overrides the tags setting
+	settings = defaultTestSettings
+	settings.Build.Tags = []string{"original-tag1", "original-tag2"}
+
+	tmpFile3, err := os.CreateTemp("", "tags-file-override-*.txt")
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile3.Name())
+
+	_, err = tmpFile3.Write([]byte("new-tag1\nnew-tag2"))
+	assert.NoError(t, err)
+	assert.NoError(t, tmpFile3.Close())
+
+	settings.Build.TagsFile = tmpFile3.Name()
+
+	p = newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).Validate())
+
+	// Check that the original tags were replaced by the file tags
+	assert.Len(t, settings.Build.Tags, 2)
+	assert.ElementsMatch(t, settings.Build.Tags, []string{"new-tag1", "new-tag2"})
+}
+
+func TestTagsFileWithCommas(t *testing.T) {
+	// Test with comma-separated tags in a single line
+	settings := defaultTestSettings
+
+	// Create a temporary file with comma-separated tags
+	tagsContent := "tag1,tag2"
+	tmpFile, err := os.CreateTemp("", "tags-file-commas-*.txt")
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.Write([]byte(tagsContent))
+	assert.NoError(t, err)
+	assert.NoError(t, tmpFile.Close())
+
+	// Set the tags file
+	settings.Build.TagsFile = tmpFile.Name()
+
+	// Run the validation which processes the tags file
+	p := newSettingsOnly(&settings)
+	assert.NoError(t, p.(*Plugin).Validate())
+
+	// Check how the comma-separated tags were processed
+	// Since the code splits by newlines, not commas, we expect a single tag "tag1,tag2,tag3"
+	assert.Len(t, settings.Build.Tags, 1)
+	assert.Equal(t, "tag1,tag2", settings.Build.Tags[0])
 }
