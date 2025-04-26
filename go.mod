@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.7
 	github.com/go-git/go-git/v5 v5.14.0
 	github.com/joho/godotenv v1.5.1
-	github.com/pelletier/go-toml/v2 v2.2.3
+	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli/v3 v3.1.1
