@@ -8,7 +8,7 @@ require (
 	codeberg.org/6543/go-yaml2json v1.0.0
 	codeberg.org/woodpecker-plugins/drone-plugin-lib v0.6.1
 	github.com/6543/go-version v1.4.0
-	github.com/aws/aws-sdk-go v1.55.6
+	github.com/aws/aws-sdk-go v1.55.7
 	github.com/go-git/go-git/v5 v5.14.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pelletier/go-toml/v2 v2.2.3
