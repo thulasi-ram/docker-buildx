@@ -3,7 +3,6 @@ package plugin
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"testing"
 
@@ -13,35 +12,35 @@ import (
 
 func TestCommandBuilder(t *testing.T) {
 	tests := []struct {
-		Name      string
-		Daemon    Daemon
-		Input     string
-		WantedLen int
-		Skip      bool
-		Excuse    string
+		name      string
+		daemon    Daemon
+		input     string
+		wantedLen int
+		skip      bool
+		excuse    string
 	}{
 		{
-			Name:      "Single driver-opt value",
-			Daemon:    Daemon{},
-			Input:     "no_proxy=*.mydomain",
-			WantedLen: 1,
+			name:      "Single driver-opt value",
+			daemon:    Daemon{},
+			input:     "no_proxy=*.mydomain",
+			wantedLen: 1,
 		},
 		{
-			Name:      "Single driver-opt value with comma",
-			Input:     "no_proxy=.mydomain,.sub.domain.com",
-			WantedLen: 1,
-			Skip:      true,
-			Excuse:    "Can be enabled whenever #94 is fixed.",
+			name:      "Single driver-opt value with comma",
+			input:     "no_proxy=.mydomain,.sub.domain.com",
+			wantedLen: 1,
+			skip:      true,
+			excuse:    "Can be enabled whenever #94 is fixed.",
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.Name, func(t *testing.T) {
-			if test.Skip {
-				t.Skip(fmt.Printf("%v skipped. %v", test.Name, test.Excuse))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.skip {
+				t.Skip(fmt.Printf("%v skipped. %v", tt.name, tt.excuse))
 			}
 			// prepare test values to mock plugin call with settings
-			os.Setenv("PLUGIN_BUILDKIT_DRIVEROPT", test.Input)
+			t.Setenv("PLUGIN_BUILDKIT_DRIVEROPT", tt.input)
 
 			// create dummy cli app to reproduce the issue
 			app := &cli.Command{
@@ -53,7 +52,7 @@ func TestCommandBuilder(t *testing.T) {
 						Name:        "daemon.buildkit-driveropt",
 						Sources:     cli.EnvVars("PLUGIN_BUILDKIT_DRIVEROPT"),
 						Usage:       "adds optional driver-ops args like 'env.http_proxy'",
-						Destination: &test.Daemon.BuildkitDriverOpt,
+						Destination: &tt.daemon.BuildkitDriverOpt,
 					},
 				},
 				Action: nil,
@@ -63,46 +62,46 @@ func TestCommandBuilder(t *testing.T) {
 			_ = app.Run(context.Background(), nil)
 
 			// call the commandBuilder to prepare the cmd with its args
-			_ = commandBuilder(test.Daemon, "", false)
+			_ = commandBuilder(tt.daemon, "", false)
 
-			assert.Len(t, test.Daemon.BuildkitDriverOpt, test.WantedLen)
+			assert.Len(t, tt.daemon.BuildkitDriverOpt, tt.wantedLen)
 		})
 	}
 }
 
 func TestCommandBuilderRemoteBuilders(t *testing.T) {
 	tests := []struct {
-		Name   string
-		Daemon Daemon
-		Input  string
-		Skip   bool
-		Excuse string
+		name   string
+		daemon Daemon
+		input  string
+		skip   bool
+		excuse string
 	}{
 		{
-			Name:  "Single 'local' remote builder",
-			Input: "local",
+			name:  "Single 'local' remote builder",
+			input: "local",
 		},
 		{
-			Name:  "Single remote builder",
-			Input: "root@example.org",
+			name:  "Single remote builder",
+			input: "root@example.org",
 		},
 		{
-			Name:  "Remote and local builders",
-			Input: "local,root@example.org",
+			name:  "Remote and local builders",
+			input: "local,root@example.org",
 		},
 		{
-			Name:  "Two remote builders",
-			Input: "root@example.com,root@example.org",
+			name:  "Two remote builders",
+			input: "root@example.com,root@example.org",
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.Name, func(t *testing.T) {
-			if test.Skip {
-				t.Skip(fmt.Printf("%v skipped. %v", test.Name, test.Excuse))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.skip {
+				t.Skip(fmt.Printf("%v skipped. %v", tt.name, tt.excuse))
 			}
 			// prepare test values to mock plugin call with settings
-			os.Setenv("PLUGIN_REMOTE_BUILDERS", test.Input)
+			t.Setenv("PLUGIN_REMOTE_BUILDERS", tt.input)
 
 			// create dummy cli app to reproduce the issue
 			app := &cli.Command{
@@ -114,7 +113,7 @@ func TestCommandBuilderRemoteBuilders(t *testing.T) {
 						Name:        "daemon.remote-builder",
 						Sources:     cli.EnvVars("PLUGIN_REMOTE_BUILDERS"),
 						Usage:       "adds remote builders to be used by buildx",
-						Destination: &test.Daemon.RemoteBuilders,
+						Destination: &tt.daemon.RemoteBuilders,
 					},
 				},
 				Action: nil,
@@ -124,8 +123,8 @@ func TestCommandBuilderRemoteBuilders(t *testing.T) {
 			_ = app.Run(context.Background(), nil)
 
 			var cmd *exec.Cmd
-			for _, host := range test.Daemon.RemoteBuilders {
-				cmd = commandBuilder(test.Daemon, host, false)
+			for _, host := range tt.daemon.RemoteBuilders {
+				cmd = commandBuilder(tt.daemon, host, false)
 				assert.NotContains(t, cmd.Args, "local")
 				assert.NotContains(t, cmd.Args, "--append")
 				if host == "local" {
@@ -133,7 +132,7 @@ func TestCommandBuilderRemoteBuilders(t *testing.T) {
 				} else {
 					assert.Contains(t, cmd.Args, "ssh://"+host)
 				}
-				cmd = commandBuilder(test.Daemon, host, true)
+				cmd = commandBuilder(tt.daemon, host, true)
 				assert.Contains(t, cmd.Args, "--append")
 			}
 		})

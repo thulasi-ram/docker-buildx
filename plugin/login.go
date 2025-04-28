@@ -8,7 +8,7 @@ import (
 // login to the registrys
 func (p *Plugin) Login() error {
 	registrys := make(map[string]bool)
-	for _, login := range p.settings.Logins {
+	for _, login := range p.Settings.Logins {
 		if !registrys[login.Registry] && !login.anonymous() {
 			// only log into a registry once
 			registrys[login.Registry] = true

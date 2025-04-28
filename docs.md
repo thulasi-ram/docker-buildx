@@ -32,6 +32,8 @@ To mount custom CA certificates, the Woodpecker env var `WOODPECKER_BACKEND_DOCK
 
 ## Settings
 
+**Attention**: Settings which contain literate commas as their value (e.g. in `builds_args`, `cache_from`, `secrets`) must be escaped using `\\`, i.e. `\\,`. Otherwise these items will be split into multiple values.
+
 | Settings Name           | Default                       | Description                                        |
 | ----------------------- | ----------------------------- | -------------------------------------------------- |
 | `dry-run`               | `false`                       | disables docker push                               |
@@ -207,7 +209,7 @@ steps:
     image: woodpeckerci/plugin-docker-buildx:2
     privileged: true
     settings:
-      dry-run: true
+      dry_run: true
       repo: *publish_repos
       dockerfile: Dockerfile.multi
       platforms: linux/amd64
@@ -264,7 +266,8 @@ steps:
     settings:
       repo: hari/radiant
       cache_to: type=s3,region=east,bucket=mystuff,name=radiant-cache
-      cache_from: type=s3,region=east,bucket=mystuff,name=radiant-cache
+      cache_from:
+        - type=s3\\,region=east\\,bucket=mystuff\\,name=radiant-cache
 ```
 
 ## Using remote builders
@@ -280,10 +283,12 @@ build:
     platforms: linux/amd64,linux/arm64
     repo: codeberg.org/${CI_REPO_OWNER}/hello
     registry: codeberg.org
-    dry-run: true
-    ssh-key:
+    dry_run: true
+    ssh_key:
       from_secret: ssh_key
-    remote-builders: root@my-amd64-build-server,root@my-arm64-build-server
+    remote_builders:
+      - root@my-amd64-build-server
+      - root@my-arm64-build-server
 ```
 
 If you want to mix local and remote builders, the list can include "local":
@@ -295,8 +300,10 @@ build:
     platforms: linux/amd64,linux/arm64
     repo: codeberg.org/${CI_REPO_OWNER}/hello
     registry: codeberg.org
-    dry-run: true
-    ssh-key:
+    dry_run: true
+    ssh_key:
       from_secret: ssh_key
-    remote-builders: local,root@my-arm64-build-server
+    remote_builders:
+      - local
+      - root@my-arm64-build-server
 ```

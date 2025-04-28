@@ -27,15 +27,15 @@ var (
 
 func (p *Plugin) EcrInit() {
 	// create a standalone Login object to account for single repo and multi-repo case
-	if len(p.settings.Logins) >= 1 {
-		for _, login := range p.settings.Logins {
+	if len(p.Settings.Logins) >= 1 {
+		for _, login := range p.Settings.Logins {
 			if strings.Contains(login.Registry, "amazonaws.com") {
 				ecr_login = login
 				aws_region = login.Aws_region
 
 				// filter repo containing ecr registry
 				substrings := make([]string, 0)
-				for _, repo := range p.settings.Build.Repo {
+				for _, repo := range p.Settings.Build.Repo {
 					substrings = append(substrings, strings.Split(repo, ",")...)
 				}
 				filtered := make([]string, 0)
@@ -53,26 +53,26 @@ func (p *Plugin) EcrInit() {
 					aws_region = DefaultRegion
 				}
 
-				os.Setenv("AWS_REGION", aws_region)
-				os.Setenv("AWS_ACCESS_KEY_ID", ecr_login.Aws_access_key_id)
-				os.Setenv("AWS_SECRET_ACCESS_KEY", ecr_login.Aws_secret_access_key)
+				_ = os.Setenv("AWS_REGION", aws_region)
+				_ = os.Setenv("AWS_ACCESS_KEY_ID", ecr_login.Aws_access_key_id)
+				_ = os.Setenv("AWS_SECRET_ACCESS_KEY", ecr_login.Aws_secret_access_key)
 
 			}
 		}
 	} else {
-		ecr_login.Aws_access_key_id = p.settings.AwsAccessKeyId
-		ecr_login.Aws_secret_access_key = p.settings.AwsSecretAccessKey
-		aws_region = p.settings.AwsRegion
-		repo = p.settings.Build.Repo[0]
+		ecr_login.Aws_access_key_id = p.Settings.AwsAccessKeyId
+		ecr_login.Aws_secret_access_key = p.Settings.AwsSecretAccessKey
+		aws_region = p.Settings.AwsRegion
+		repo = p.Settings.Build.Repo[0]
 
 		// set the region
 		if aws_region == "" {
 			aws_region = DefaultRegion
 		}
 
-		os.Setenv("AWS_REGION", p.settings.AwsRegion)
-		os.Setenv("AWS_ACCESS_KEY_ID", p.settings.AwsAccessKeyId)
-		os.Setenv("AWS_SECRET_ACCESS_KEY", p.settings.AwsSecretAccessKey)
+		_ = os.Setenv("AWS_REGION", p.Settings.AwsRegion)
+		_ = os.Setenv("AWS_ACCESS_KEY_ID", p.Settings.AwsAccessKeyId)
+		_ = os.Setenv("AWS_SECRET_ACCESS_KEY", p.Settings.AwsSecretAccessKey)
 	}
 	// here the env vars are used for authentication
 	sess, err := session.NewSession(&aws.Config{Region: &aws_region})
@@ -90,19 +90,19 @@ func (p *Plugin) EcrInit() {
 		repo = fmt.Sprintf("%s/%s", registry, repo)
 	}
 
-	if p.settings.EcrCreateRepository {
-		err = ensureRepoExists(svc, trimHostname(repo, registry), p.settings.EcrScanOnPush)
+	if p.Settings.EcrCreateRepository {
+		err = ensureRepoExists(svc, trimHostname(repo, registry), p.Settings.EcrScanOnPush)
 		if err != nil {
 			log.Fatalf("error creating ECR repo: %v", err)
 		}
-		err = updateImageScannningConfig(svc, trimHostname(repo, registry), p.settings.EcrScanOnPush)
+		err = updateImageScannningConfig(svc, trimHostname(repo, registry), p.Settings.EcrScanOnPush)
 		if err != nil {
 			log.Fatalf("error updating scan on push for ECR repo: %v", err)
 		}
 	}
 
-	if p.settings.EcrLifecyclePolicy != "" {
-		p, err := os.ReadFile(p.settings.EcrLifecyclePolicy)
+	if p.Settings.EcrLifecyclePolicy != "" {
+		p, err := os.ReadFile(p.Settings.EcrLifecyclePolicy)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -111,8 +111,8 @@ func (p *Plugin) EcrInit() {
 		}
 	}
 
-	if p.settings.EcrRepositoryPolicy != "" {
-		p, err := os.ReadFile(p.settings.EcrRepositoryPolicy)
+	if p.Settings.EcrRepositoryPolicy != "" {
+		p, err := os.ReadFile(p.Settings.EcrRepositoryPolicy)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -122,18 +122,18 @@ func (p *Plugin) EcrInit() {
 	}
 
 	// set Username and Password for all Login which contain an AWS key
-	if len(p.settings.Logins) >= 1 {
-		for i, login := range p.settings.Logins {
+	if len(p.Settings.Logins) >= 1 {
+		for i, login := range p.Settings.Logins {
 			if login.Aws_secret_access_key != "" && login.Aws_access_key_id != "" {
-				p.settings.Logins[i].Username = username
-				p.settings.Logins[i].Password = password
-				p.settings.Logins[i].Registry = registry
+				p.Settings.Logins[i].Username = username
+				p.Settings.Logins[i].Password = password
+				p.Settings.Logins[i].Registry = registry
 			}
 		}
 	} else {
-		p.settings.DefaultLogin.Username = username
-		p.settings.DefaultLogin.Password = password
-		p.settings.DefaultLogin.Registry = registry
+		p.Settings.DefaultLogin.Username = username
+		p.Settings.DefaultLogin.Password = password
+		p.Settings.DefaultLogin.Registry = registry
 	}
 }
 

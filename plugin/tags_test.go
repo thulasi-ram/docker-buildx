@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -10,203 +11,280 @@ import (
 
 func Test_stripTagPrefix(t *testing.T) {
 	tests := []struct {
-		Before string
-		After  string
+		name   string
+		before string
+		after  string
 	}{
-		{"refs/tags/1.0.0", "1.0.0"},
-		{"refs/tags/v1.0.0", "v1.0.0"},
-		{"v1.0.0", "v1.0.0"},
+		{
+			name:   "strip refs/tags prefix",
+			before: "refs/tags/1.0.0",
+			after:  "1.0.0",
+		},
+		{
+			name:   "strip refs/tags prefix with v",
+			before: "refs/tags/v1.0.0",
+			after:  "v1.0.0",
+		},
+		{
+			name:   "no prefix to strip",
+			before: "v1.0.0",
+			after:  "v1.0.0",
+		},
 	}
 
-	for _, test := range tests {
-		got, want := stripTagPrefix(test.Before), test.After
-		if got != want {
-			t.Errorf("Got tag %s, want %s", got, want)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, want := stripTagPrefix(tt.before), tt.after
+			if got != want {
+				t.Errorf("Got tag %s, want %s", got, want)
+			}
+		})
 	}
 }
 
 func TestDefaultTags(t *testing.T) {
 	tests := []struct {
-		DefaultTag string
-		Before     string
-		After      []string
+		name       string
+		defaultTag string
+		before     string
+		after      []string
 	}{
-		// no tag event
-		{"latest", "", []string{"latest"}},
-		{"latest", "refs/heads/master", []string{"latest"}},
-		// tag event with semver
-		{"latest", "refs/tags/0.9.0", []string{"0.9", "0.9.0"}},
-		{"latest", "refs/tags/1.0.0", []string{"1", "1.0", "1.0.0"}},
-		{"latest", "refs/tags/v1.0.0", []string{"1", "1.0", "1.0.0"}},
-		{"latest", "refs/tags/v1.2.3-rc1", []string{"1.2.3-rc1"}},
-		{"latest", "refs/tags/v1.0.0-alpha.1", []string{"1.0.0-alpha.1"}},
-		{"latest", "refs/tags/v20221221", []string{"20221221", "20221221.0", "20221221.0.0"}},
-		{"latest", "refs/tags/v2022-12-21", []string{"2022.0.0-12-21"}},
-		// tag event with date
-		{"latest", "refs/tags/20221221", []string{"20221221"}},
-		{"latest", "refs/tags/2022-12-21", []string{"2022-12-21"}},
+		{
+			name:       "no tag event",
+			defaultTag: "latest",
+			before:     "",
+			after:      []string{"latest"},
+		},
+		{
+			name:       "master branch",
+			defaultTag: "latest",
+			before:     "refs/heads/master",
+			after:      []string{"latest"},
+		},
+		{
+			name:       "semver tag without v prefix",
+			defaultTag: "latest",
+			before:     "refs/tags/0.9.0",
+			after:      []string{"0.9", "0.9.0"},
+		},
+		{
+			name:       "semver tag without v prefix major version",
+			defaultTag: "latest",
+			before:     "refs/tags/1.0.0",
+			after:      []string{"1", "1.0", "1.0.0"},
+		},
+		{
+			name:       "semver tag with v prefix",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.0.0",
+			after:      []string{"1", "1.0", "1.0.0"},
+		},
+		{
+			name:       "release candidate tag",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.2.3-rc1",
+			after:      []string{"1.2.3-rc1"},
+		},
+		{
+			name:       "alpha release tag",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.0.0-alpha.1",
+			after:      []string{"1.0.0-alpha.1"},
+		},
+		{
+			name:       "date version with v prefix",
+			defaultTag: "latest",
+			before:     "refs/tags/v20221221",
+			after:      []string{"20221221", "20221221.0", "20221221.0.0"},
+		},
+		{
+			name:       "date version with hyphens",
+			defaultTag: "latest",
+			before:     "refs/tags/v2022-12-21",
+			after:      []string{"2022.0.0-12-21"},
+		},
+		{
+			name:       "date tag without v prefix",
+			defaultTag: "latest",
+			before:     "refs/tags/20221221",
+			after:      []string{"20221221"},
+		},
+		{
+			name:       "date tag with hyphens",
+			defaultTag: "latest",
+			before:     "refs/tags/2022-12-21",
+			after:      []string{"2022-12-21"},
+		},
 	}
 
-	for _, test := range tests {
-		tags, err := DefaultTags(test.Before, test.DefaultTag)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-		got, want := tags, test.After
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("Got tag %v, want %v", got, want)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tags, err := DefaultTags(tt.before, tt.defaultTag)
+			if err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			got, want := tags, tt.after
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Got tag %v, want %v", got, want)
+			}
+		})
 	}
 }
 
 func TestDefaultTagsError(t *testing.T) {
 	tests := []struct {
-		DefaultTag string
-		Before     string
+		name       string
+		defaultTag string
+		before     string
 	}{
 		{
-			DefaultTag: "latest",
-			Before:     "refs/tags/x1.0.0",
+			name:       "invalid version prefix",
+			defaultTag: "latest",
+			before:     "refs/tags/x1.0.0",
 		},
 		{
-			DefaultTag: "latest",
-			Before:     "refs/tags/2a",
+			name:       "invalid version format",
+			defaultTag: "latest",
+			before:     "refs/tags/2a",
 		},
 	}
 
-	for _, test := range tests {
-		tags, err := DefaultTags(test.Before, test.DefaultTag)
-		if err == nil {
-			t.Errorf("Expect tag error for %s, got tags %v", test, tags)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tags, err := DefaultTags(tt.before, tt.defaultTag)
+			if err == nil {
+				t.Errorf("Expect tag error for %s, got tags %v", tt, tags)
+			}
+		})
 	}
 }
 
-func TestDefaultTagSuffix(t *testing.T) {
+func TestDefaultTagsuffix(t *testing.T) {
 	tests := []struct {
-		Name       string
-		Before     string
-		Suffix     string
-		After      []string
-		DefaultTag string
+		name       string
+		before     string
+		suffix     string
+		after      []string
+		defaultTag string
 	}{
 		{
-			Name:       "Default tag without suffix",
-			DefaultTag: "latest",
-			After:      []string{"latest"},
+			name:       "Default tag without suffix",
+			defaultTag: "latest",
+			after:      []string{"latest"},
 		},
 		{
-			Name:       "Overridden default tag without suffix",
-			DefaultTag: "next",
-			After:      []string{"next"},
+			name:       "Overridden default tag without suffix",
+			defaultTag: "next",
+			after:      []string{"next"},
 		},
 		{
-			Name:       "Generate version",
-			DefaultTag: "latest",
-			Before:     "refs/tags/v1.0.0",
-			After: []string{
+			name:       "Generate version",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.0.0",
+			after: []string{
 				"1",
 				"1.0",
 				"1.0.0",
 			},
 		},
 		{
-			Name:       "Generate version with overridden default tag",
-			DefaultTag: "next",
-			Before:     "refs/tags/v1.0.0",
-			After: []string{
+			name:       "Generate version with overridden default tag",
+			defaultTag: "next",
+			before:     "refs/tags/v1.0.0",
+			after: []string{
 				"1",
 				"1.0",
 				"1.0.0",
 			},
 		},
 		{
-			Name:       "Default tag with suffix (linux-amd64)",
-			DefaultTag: "latest",
-			Suffix:     "linux-amd64",
-			After:      []string{"linux-amd64"},
+			name:       "Default tag with suffix (linux-amd64)",
+			defaultTag: "latest",
+			suffix:     "linux-amd64",
+			after:      []string{"linux-amd64"},
 		},
 		{
-			Name:       "Overridden default tag with suffix (linux-amd64)",
-			DefaultTag: "next",
-			Suffix:     "linux-amd64",
-			After:      []string{"linux-amd64"},
+			name:       "Overridden default tag with suffix (linux-amd64)",
+			defaultTag: "next",
+			suffix:     "linux-amd64",
+			after:      []string{"linux-amd64"},
 		},
 		{
-			Name:       "Generate version with suffix (linux-amd64)",
-			DefaultTag: "latest",
-			Before:     "refs/tags/v1.0.0",
-			Suffix:     "linux-amd64",
-			After: []string{
+			name:       "Generate version with suffix (linux-amd64)",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.0.0",
+			suffix:     "linux-amd64",
+			after: []string{
 				"1-linux-amd64",
 				"1.0-linux-amd64",
 				"1.0.0-linux-amd64",
 			},
 		},
 		{
-			Name:       "Generate version with suffix (linux-amd64) and overridden default tag (next)",
-			DefaultTag: "next",
-			Before:     "refs/tags/v1.0.0",
-			Suffix:     "linux-amd64",
-			After: []string{
+			name:       "Generate version with suffix (linux-amd64) and overridden default tag (next)",
+			defaultTag: "next",
+			before:     "refs/tags/v1.0.0",
+			suffix:     "linux-amd64",
+			after: []string{
 				"1-linux-amd64",
 				"1.0-linux-amd64",
 				"1.0.0-linux-amd64",
 			},
 		},
 		{
-			Name:       "Default tag with suffix (nanoserver)",
-			DefaultTag: "latest",
-			Suffix:     "nanoserver",
-			After:      []string{"nanoserver"},
+			name:       "Default tag with suffix (nanoserver)",
+			defaultTag: "latest",
+			suffix:     "nanoserver",
+			after:      []string{"nanoserver"},
 		},
 		{
-			Name:       "Overridden default tag with suffix (nanoserver)",
-			DefaultTag: "next",
-			Suffix:     "nanoserver",
-			After:      []string{"nanoserver"},
+			name:       "Overridden default tag with suffix (nanoserver)",
+			defaultTag: "next",
+			suffix:     "nanoserver",
+			after:      []string{"nanoserver"},
 		},
 		{
-			Name:       "Generate version with suffix (nanoserver)",
-			DefaultTag: "latest",
-			Before:     "refs/tags/v1.9.2",
-			Suffix:     "nanoserver",
-			After: []string{
+			name:       "Generate version with suffix (nanoserver)",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.9.2",
+			suffix:     "nanoserver",
+			after: []string{
 				"1-nanoserver",
 				"1.9-nanoserver",
 				"1.9.2-nanoserver",
 			},
 		},
 		{
-			Name:       "Generate version with suffix (nanoserver) and overridden default tag (next)",
-			DefaultTag: "latest",
-			Before:     "refs/tags/v1.9.2",
-			Suffix:     "nanoserver",
-			After: []string{
+			name:       "Generate version with suffix (nanoserver) and overridden default tag (next)",
+			defaultTag: "latest",
+			before:     "refs/tags/v1.9.2",
+			suffix:     "nanoserver",
+			after: []string{
 				"1-nanoserver",
 				"1.9-nanoserver",
 				"1.9.2-nanoserver",
 			},
 		},
 		{
-			Name:       "Generate version with suffix (zero-padded version)",
-			DefaultTag: "latest",
-			Before:     "refs/tags/v18.06.0",
-			Suffix:     "nanoserver",
-			After: []string{
+			name:       "Generate version with suffix (zero-padded version)",
+			defaultTag: "latest",
+			before:     "refs/tags/v18.06.0",
+			suffix:     "nanoserver",
+			after: []string{
 				"18-nanoserver",
 				"18.6-nanoserver",
 				"18.6.0-nanoserver",
 			},
 		},
 		{
-			Name:       "Generate version with suffix (zero-padded version) with overridden default tag (next)",
-			DefaultTag: "next",
-			Before:     "refs/tags/v18.06.0",
-			Suffix:     "nanoserver",
-			After: []string{
+			name:       "Generate version with suffix (zero-padded version) with overridden default tag (next)",
+			defaultTag: "next",
+			before:     "refs/tags/v18.06.0",
+			suffix:     "nanoserver",
+			after: []string{
 				"18-nanoserver",
 				"18.6-nanoserver",
 				"18.6.0-nanoserver",
@@ -214,11 +292,11 @@ func TestDefaultTagSuffix(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.Name, func(t *testing.T) {
-			tags, err := DefaultTagSuffix(test.Before, test.DefaultTag, test.Suffix)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tags, err := DefaultTagSuffix(tt.before, tt.defaultTag, tt.suffix)
 			if assert.NoError(t, err) {
-				assert.EqualValues(t, test.After, tags)
+				assert.EqualValues(t, tt.after, tags)
 			}
 		})
 	}
@@ -229,20 +307,25 @@ func Test_stripHeadPrefix(t *testing.T) {
 		ref string
 	}
 	tests := []struct {
+		name string
 		args args
 		want string
 	}{
 		{
+			name: "strip refs/heads prefix",
 			args: args{
 				ref: "refs/heads/master",
 			},
 			want: "master",
 		},
 	}
+
 	for _, tt := range tests {
-		if got := stripHeadPrefix(tt.args.ref); got != tt.want {
-			t.Errorf("stripHeadPrefix() = %v, want %v", got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			if got := stripHeadPrefix(tt.args.ref); got != tt.want {
+				t.Errorf("stripHeadPrefix() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -251,6 +334,7 @@ func TestUseDefaultTag(t *testing.T) {
 		ref           string
 		defaultBranch string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -281,131 +365,144 @@ func TestUseDefaultTag(t *testing.T) {
 			want: false,
 		},
 	}
+
 	for _, tt := range tests {
-		if got := UseDefaultTag(tt.args.ref, tt.args.defaultBranch); got != tt.want {
-			t.Errorf("%q. UseDefaultTag() = %v, want %v", tt.name, got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			if got := UseDefaultTag(tt.args.ref, tt.args.defaultBranch); got != tt.want {
+				t.Errorf("%q. UseDefaultTag() = %v, want %v", tt.name, got, tt.want)
+			}
+		})
 	}
 }
 
 func Test_isSingleTag(t *testing.T) {
 	tests := []struct {
-		Tag     string
-		IsValid bool
+		name string
+		tag  string
+		want bool
 	}{
-		{"latest", true},
-		{" latest", false},
-		{"LaTest__Hi", true},
-		{"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ__.-0123456789", true},
-		{"_wierd.but-ok1", true},
-		{"latest ", false},
-		{"latest,next", false},
-		{"", true}, // important to allow omitting 'latest' tag when using auto_tag: true
+		{
+			name: "latest tag",
+			tag:  "latest",
+			want: true,
+		},
+		{
+			name: "leading space",
+			tag:  " latest",
+			want: false,
+		},
+		{
+			name: "mixed case with underscores",
+			tag:  "LaTest__Hi",
+			want: true,
+		},
+		{
+			name: "all valid characters",
+			tag:  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ__.-0123456789",
+			want: true,
+		},
+		{
+			name: "special characters",
+			tag:  "_wierd.but-ok1",
+			want: true,
+		},
+		{
+			name: "trailing space",
+			tag:  "latest ",
+			want: false,
+		},
+		{
+			name: "multiple tags",
+			tag:  "latest,next",
+			want: false,
+		},
+		{
+			name: "empty tag",
+			tag:  "",
+			want: true, // important to allow omitting 'latest' tag when using auto_tag: true
+		},
 		// more tests to be added, once the validation is more powerful
 	}
 
-	for _, test := range tests {
-		valid := isSingleTag(test.Tag)
-		if valid != test.IsValid {
-			t.Errorf("Tag verification '%s' tag %v, want %v", test.Tag, valid, test.IsValid)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isSingleTag(tt.tag); got != tt.want {
+				t.Errorf("%q. isSingleTag() = %v, want %v", tt.name, got, tt.want)
+			}
+		})
 	}
 }
 
 func TestTagsFile(t *testing.T) {
-	// Test with tags on separate lines
-	settings := defaultTestSettings
+	tests := []struct {
+		name         string
+		envs         map[string]string
+		tagsContent  string
+		initialTags  []string
+		expectedTags []string
+		fileExists   bool
+		wantErr      bool
+	}{
+		{
+			name:         "tags on separate lines",
+			tagsContent:  "tag1\ntag2\ntag3",
+			expectedTags: []string{"tag1", "tag2", "tag3"},
+			wantErr:      false,
+		},
+		{
+			name:         "tags with extra whitespace",
+			tagsContent:  "  tag1  \n tag2 \n\ntag3  ",
+			expectedTags: []string{"tag1", "tag2", "tag3"},
+			wantErr:      false,
+		},
+		{
+			name:    "non-existent file",
+			wantErr: true,
+		},
+		{
+			name: "tags file overrides existing tags",
+			envs: map[string]string{
+				"PLUGIN_TAGS": "tag1,tag2",
+			},
+			tagsContent:  "new-tag1\nnew-tag2",
+			expectedTags: []string{"new-tag1", "new-tag2"},
+			wantErr:      false,
+		},
+		{
+			name:         "tags file with commas",
+			tagsContent:  "tag1,tag2,tag3",
+			expectedTags: []string{"tag1,tag2,tag3"},
+			wantErr:      false,
+		},
+	}
 
-	// Create a temporary file with multiple tags on separate lines
-	tagsContent := "tag1\ntag2\ntag3"
-	tmpFile, err := os.CreateTemp("", "tags-file-test-*.txt")
-	assert.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for key, value := range tt.envs {
+				t.Setenv(key, value)
+			}
 
-	_, err = tmpFile.Write([]byte(tagsContent))
-	assert.NoError(t, err)
-	assert.NoError(t, tmpFile.Close())
+			tempDir := t.TempDir()
+			tmpFilePath := filepath.Join(tempDir, "tags-file.txt")
 
-	// Set the tags file
-	settings.Build.TagsFile = tmpFile.Name()
+			if tt.tagsContent != "" {
+				_ = os.WriteFile(tmpFilePath, []byte(tt.tagsContent), 0o644)
+			}
 
-	// Run the validation which processes the tags file
-	p := newSettingsOnly(&settings)
-	assert.NoError(t, p.(*Plugin).Validate())
+			t.Setenv("PLUGIN_TAGS_FILE", tmpFilePath)
 
-	// Check that the tags were properly read from the file
-	assert.Len(t, settings.Build.Tags, 3)
-	assert.ElementsMatch(t, settings.Build.Tags, []string{"tag1", "tag2", "tag3"})
+			got := setupPluginTest(t)
 
-	// Test with tags that have extra whitespace
-	tagsContent = "  tag1  \n tag2 \n\ntag3  "
-	tmpFile2, err := os.CreateTemp("", "tags-file-test-whitespace-*.txt")
-	assert.NoError(t, err)
-	defer os.Remove(tmpFile2.Name())
+			_ = got.InitSettings()
+			err := got.Validate()
 
-	_, err = tmpFile2.Write([]byte(tagsContent))
-	assert.NoError(t, err)
-	assert.NoError(t, tmpFile2.Close())
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-	settings.Build.TagsFile = tmpFile2.Name()
-
-	p = newSettingsOnly(&settings)
-	assert.NoError(t, p.(*Plugin).Validate())
-
-	// Check that the tags were properly trimmed and empty lines were skipped
-	assert.Len(t, settings.Build.Tags, 3)
-	assert.ElementsMatch(t, settings.Build.Tags, []string{"tag1", "tag2", "tag3"})
-
-	// Test with a non-existent file
-	settings.Build.TagsFile = "non-existent-file.txt"
-	p = newSettingsOnly(&settings)
-	assert.Error(t, p.(*Plugin).Validate())
-
-	// Test that tags file overrides the tags setting
-	settings = defaultTestSettings
-	settings.Build.Tags = []string{"original-tag1", "original-tag2"}
-
-	tmpFile3, err := os.CreateTemp("", "tags-file-override-*.txt")
-	assert.NoError(t, err)
-	defer os.Remove(tmpFile3.Name())
-
-	_, err = tmpFile3.Write([]byte("new-tag1\nnew-tag2"))
-	assert.NoError(t, err)
-	assert.NoError(t, tmpFile3.Close())
-
-	settings.Build.TagsFile = tmpFile3.Name()
-
-	p = newSettingsOnly(&settings)
-	assert.NoError(t, p.(*Plugin).Validate())
-
-	// Check that the original tags were replaced by the file tags
-	assert.Len(t, settings.Build.Tags, 2)
-	assert.ElementsMatch(t, settings.Build.Tags, []string{"new-tag1", "new-tag2"})
-}
-
-func TestTagsFileWithCommas(t *testing.T) {
-	// Test with comma-separated tags in a single line
-	settings := defaultTestSettings
-
-	// Create a temporary file with comma-separated tags
-	tagsContent := "tag1,tag2"
-	tmpFile, err := os.CreateTemp("", "tags-file-commas-*.txt")
-	assert.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
-
-	_, err = tmpFile.Write([]byte(tagsContent))
-	assert.NoError(t, err)
-	assert.NoError(t, tmpFile.Close())
-
-	// Set the tags file
-	settings.Build.TagsFile = tmpFile.Name()
-
-	// Run the validation which processes the tags file
-	p := newSettingsOnly(&settings)
-	assert.NoError(t, p.(*Plugin).Validate())
-
-	// Check how the comma-separated tags were processed
-	// Since the code splits by newlines, not commas, we expect a single tag "tag1,tag2,tag3"
-	assert.Len(t, settings.Build.Tags, 1)
-	assert.Equal(t, "tag1,tag2", settings.Build.Tags[0])
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expectedTags, got.Settings.Build.Tags)
+		})
+	}
 }

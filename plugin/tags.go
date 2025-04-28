@@ -32,16 +32,6 @@ func DefaultTagSuffix(ref, defaultTag, suffix string) ([]string, error) {
 	return tags, nil
 }
 
-func splitOff(input, delim string) string {
-	parts := strings.SplitN(input, delim, 2)
-
-	if len(parts) == 2 {
-		return parts[0]
-	}
-
-	return input
-}
-
 // DefaultTags returns a set of default suggested tags based on
 // the commit ref.
 func DefaultTags(ref, defaultTag string) ([]string, error) {

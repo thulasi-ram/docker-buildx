@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"os/exec"
 	"strconv"
@@ -73,7 +74,7 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 		"-f", build.Dockerfile,
 	}
 
-	var defaultBuildArgs []string
+	defaultBuildArgs := make(map[string]string, 0)
 
 	if isGitRepository() {
 		// determine git epoch to define SOURCE_DATE_EPOCH build_arg
@@ -83,16 +84,14 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 		commit, _ := iter.Next()
 		build.Epoch = commit.Author.When.Unix()
 
-		defaultBuildArgs = []string{
-			fmt.Sprintf("DOCKER_IMAGE_CREATED=%s", time.Now().Format(time.RFC3339)),
-			fmt.Sprintf("SOURCE_DATE_EPOCH=%s", strconv.FormatInt(build.Epoch, 10)),
-		}
+		defaultBuildArgs["DOCKER_IMAGE_CREATED"] = time.Now().Format(time.RFC3339)
+		defaultBuildArgs["SOURCE_DATE_EPOCH"] = strconv.FormatInt(build.Epoch, 10)
 	} else {
 		fmt.Println("INFO: no git repository detected, not setting SOURCE_DATE_EPOCH")
-		defaultBuildArgs = []string{
-			fmt.Sprintf("DOCKER_IMAGE_CREATED=%s", time.Now().Format(time.RFC3339)),
-		}
+		defaultBuildArgs["DOCKER_IMAGE_CREATED"] = time.Now().Format(time.RFC3339)
 	}
+
+	maps.Copy(build.Args, defaultBuildArgs)
 
 	args = append(args, build.Context)
 	if build.Compress {
@@ -104,8 +103,8 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 	if build.NoCache {
 		args = append(args, "--no-cache")
 	}
-	if build.CacheFrom != "" {
-		args = append(args, "--cache-from", build.CacheFrom)
+	for _, arg := range build.CacheFrom {
+		args = append(args, "--cache-from", arg)
 	}
 	if build.CacheTo != "" {
 		args = append(args, "--cache-to", build.CacheTo)
@@ -117,7 +116,7 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 	for _, arg := range build.ArgsEnv {
 		addProxyValue(&build, arg)
 	}
-	for _, arg := range append(defaultBuildArgs, build.Args...) {
+	for _, arg := range build.Args {
 		args = append(args, "--build-arg", arg)
 	}
 	for _, secret := range build.Secrets {
@@ -186,8 +185,8 @@ func addProxyValue(build *Build, key string) {
 	value := getProxyValue(key)
 
 	if len(value) > 0 && !hasProxyBuildArg(build, key) {
-		build.Args = append(build.Args, fmt.Sprintf("%s=%s", key, value))
-		build.Args = append(build.Args, fmt.Sprintf("%s=%s", strings.ToUpper(key), value))
+		build.Args[key] = value
+		build.Args[strings.ToUpper(key)] = value
 	}
 }
 
@@ -257,7 +256,7 @@ func commandDaemon(daemon Daemon) *exec.Cmd {
 // trace writes each command to stdout with the command wrapped in an xml
 // tag so that it can be extracted and displayed in the logs.
 func trace(cmd *exec.Cmd) {
-	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
+	_, _ = fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
 }
 
 func isGitRepository() bool {
