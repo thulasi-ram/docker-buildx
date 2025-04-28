@@ -1,9 +1,5 @@
 codeberg.org/6543/go-yaml2json v1.0.0 h1:heGqo9VEi7gY2yNqjj7X4ADs5nzlFIbGsJtgYDLrnig=
 codeberg.org/6543/go-yaml2json v1.0.0/go.mod h1:mz61q14LWF4ZABrgMEDMmk3t9dPi6zgR1uBh2VKV2RQ=
-codeberg.org/woodpecker-plugins/go-plugin v0.7.1 h1:awAaJsoXoXjo62hREjVdS+5P5Z9w5XCwHhyiZF+uV7Q=
-codeberg.org/woodpecker-plugins/go-plugin v0.7.1/go.mod h1:h9w/JG5UwAEEzh3xrT/I1gdUNCVqMAL7d+SiWxlT2Ss=
-codeberg.org/woodpecker-plugins/go-plugin v0.7.2-0.20250423191754-95026b2ad53a h1:8BKWD0WjMP1gpmtyEa+bGlOox+P6e65vH9XgWj4DtK8=
-codeberg.org/woodpecker-plugins/go-plugin v0.7.2-0.20250423191754-95026b2ad53a/go.mod h1:Eu8KmCq3P4DfnMPMj1plIfMVjHnx/ciLLy3pwHuCKeQ=
 codeberg.org/woodpecker-plugins/go-plugin v1.0.0 h1:br0Ckwehp3fg519zduUupeZbVODHPdZa6LWau46Qhmc=
 codeberg.org/woodpecker-plugins/go-plugin v1.0.0/go.mod h1:Eu8KmCq3P4DfnMPMj1plIfMVjHnx/ciLLy3pwHuCKeQ=
 dario.cat/mergo v1.0.1 h1:Ra4+bf83h2ztPIQYNP99R6m+Y7KfnARDfID+a+vLl4s=
@@ -107,8 +103,8 @@ github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXl
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOfJA=
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-github.com/urfave/cli/v3 v3.2.0 h1:m8WIXY0U9LCuUl5r+0fqLWDhNYWt6qvlW+GcF4EoXf8=
-github.com/urfave/cli/v3 v3.2.0/go.mod h1:FJSKtM/9AiiTOJL4fJ6TbMUkxBXn7GO9guZqoZtpYpo=
+github.com/urfave/cli/v3 v3.3.2 h1:BYFVnhhZ8RqT38DxEYVFPPmGFTEf7tJwySTXsVRrS/o=
+github.com/urfave/cli/v3 v3.3.2/go.mod h1:FJSKtM/9AiiTOJL4fJ6TbMUkxBXn7GO9guZqoZtpYpo=
 github.com/xanzy/ssh-agent v0.3.3 h1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=
 github.com/xanzy/ssh-agent v0.3.3/go.mod h1:6dzNDKs0J9rVPHPhaGCukekBHKqfl+L3KghI1Bc68Uw=
 golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
