@@ -2,6 +2,39 @@
 
 # Changelog
 
+## [6.0.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.0) - 2025-05-02
+
+### ❤️ Thanks to all contributors! ❤️
+
+@pat-s, @woodpecker-bot, @xoxys
+
+### 💥 Breaking changes
+
+- Use custom flags to support from_secret and escaping [[#229](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/229)]
+
+### 📚 Documentation
+
+- chore: add tests for tag parsing [[#228](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/228)]
+
+### 📦️ Dependency
+
+- fix(deps): update module github.com/urfave/cli/v3 to v3.3.2 [[#235](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/235)]
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v5.2.2 [[#225](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/225)]
+
+### Misc
+
+- chore: remove CODEOWNERS to avoid confusion ([82de34d](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/82de34de99513ada57c211fedcb5b84c6edf8738))
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.16.0 ([12a6790](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/12a67908e6b4b350f20b4cb70c282905bd8121f6))
+- chore(deps): update docker/buildx-bin docker tag to v0.23.0 ([053af77](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/053af77a3a579c69e8525c42e0569819d8e3e9d8))
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.2.0 ([7694208](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/7694208424da908b25ea7751270539bb9ce9a0b9))
+- chore(deps): update docker docker tag to v28.1.1 ([9edff8f](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/9edff8fa43dea8fdba4d7e48b4358a365282638b))
+- fix(deps): update module github.com/pelletier/go-toml/v2 to v2.2.4 ([152d91a](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/152d91a3a1836b2f3d3a09bca0cf6e7dfd583c6e))
+- fix(deps): update module github.com/aws/aws-sdk-go to v1.55.7 ([c641ced](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/c641ced5d978c7537e7396f1b47504141873a912))
+- fix(deps): update module github.com/urfave/cli/v3 to v3.1.1 ([064a419](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/064a419fe2fbd6d286b007ebdc53c96171f2a48f))
+- chore(deps): update dependency go to v1.24.2 ([da71aa3](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/da71aa3c054eb173c33cde36527fffd0503955d0))
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.1.4 ([75d9090](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/75d909067dce714dcf19cc3da8de2c8ef087b348))
+- chore(deps): update docker docker tag to v28.0.4 ([bcd9b33](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/bcd9b33e4c4aec39a1b78be1f54c1c3049d28103))
+
 ## [5.2.2](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v5.2.2) - 2025-03-23
 
 ### ❤️ Thanks to all contributors! ❤️
