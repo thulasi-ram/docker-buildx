@@ -116,8 +116,8 @@ func commandBuild(build Build, dryrun bool) *exec.Cmd {
 	for _, arg := range build.ArgsEnv {
 		addProxyValue(&build, arg)
 	}
-	for _, arg := range build.Args {
-		args = append(args, "--build-arg", arg)
+	for k, v := range build.Args {
+		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, v))
 	}
 	for _, secret := range build.Secrets {
 		args = append(args, "--secret", secret)

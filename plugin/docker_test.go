@@ -138,3 +138,50 @@ func TestCommandBuilderRemoteBuilders(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandBuild(t *testing.T) {
+	tests := []struct {
+		name            string
+		build           Build
+		dryrun          bool
+		expectedArgs    []string
+		notExpectedArgs []string
+	}{
+		{
+			name:   "build with dryrun",
+			dryrun: true,
+			build: Build{
+				Args: map[string]string{},
+			},
+			expectedArgs: []string{
+				"--output", "type=image,rewrite-timestamp=true",
+			},
+		},
+		{
+			name: "build with multiple args",
+			build: Build{
+				Args: map[string]string{
+					"ARG1": "value1",
+					"ARG2": "value2",
+					"ARG3": "value3",
+				},
+			},
+			dryrun: true,
+			expectedArgs: []string{
+				"--build-arg", "ARG1=value1",
+				"--build-arg", "ARG2=value2",
+				"--build-arg", "ARG3=value3",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := commandBuild(tt.build, tt.dryrun)
+
+			for _, arg := range tt.expectedArgs {
+				assert.Contains(t, cmd.Args, arg)
+			}
+		})
+	}
+}
