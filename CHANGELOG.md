@@ -2,6 +2,16 @@
 
 # Changelog
 
+## [6.0.1](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.1) - 2025-05-04
+
+### ❤️ Thanks to all contributors! ❤️
+
+@xoxys
+
+### Misc
+
+- Fix build arg flags buils [[#237](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/237)]
+
 ## [6.0.0](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.0) - 2025-05-02
 
 ### ❤️ Thanks to all contributors! ❤️
