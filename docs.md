@@ -32,7 +32,7 @@ To mount custom CA certificates, the Woodpecker env var `WOODPECKER_BACKEND_DOCK
 
 ## Settings
 
-**Attention**: Settings which contain literate commas as their value (e.g. in `builds_args`, `cache_from`, `secrets`) must be escaped using `\\`, i.e. `\\,`. Otherwise these items will be split into multiple values.
+**Attention**: Settings which contain literate commas as their value (e.g. in `build_args`, `cache_from`, `secrets`) must be escaped using `\\`, i.e. `\\,`. Otherwise these items will be split into multiple values.
 
 | Settings Name           | Default                       | Description                                        |
 | ----------------------- | ----------------------------- | -------------------------------------------------- |
@@ -95,6 +95,9 @@ publish:
 docker-build:
   image: woodpeckerci/plugin-docker-buildx
   settings:
+    build_args:
+      VER: "1000"
+      ARCH: Linux_ARM64
     repo: codeberg.org/${CI_REPO_OWNER}/hello
     registry: codeberg.org
     dry-run: true
@@ -181,6 +184,7 @@ settings:
       password:
         from_secret: cb_token
     - registry: https://<account-id>.dkr.ecr.<region>.amazonaws.com
+      repo: <account-id>.dkr.ecr.<region>.amazonaws.com/<repo>
       aws_region: <region>
       aws_access_key_id:
         from_secret: aws_access_key_id
