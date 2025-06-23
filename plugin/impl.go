@@ -46,6 +46,10 @@ func (p *Plugin) InitSettings() error {
 		}
 	}
 
+	if p.Settings.DefaultLogin.Registry != "" && strings.Contains(p.Settings.DefaultLogin.Registry, "amazonaws.com") {
+		p.EcrInit()
+	}
+
 	if p.Settings.AwsAccessKeyId != "" && p.Settings.AwsSecretAccessKey != "" {
 		p.EcrInit()
 	}
