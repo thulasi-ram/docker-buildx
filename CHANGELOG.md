@@ -2,6 +2,34 @@
 
 # Changelog
 
+## [6.0.2](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.2) - 2025-06-28
+
+### ❤️ Thanks to all contributors! ❤️
+
+@joeky888, @woodpecker-bot
+
+### 📚 Documentation
+
+- Update ecr and build args example [[#240](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/240)]
+
+### 📦️ Dependency
+
+- chore(deps): update docker docker tag to v28.3.0 [[#269](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/269)]
+- chore(deps): update docker/buildx-bin docker tag to v0.25.0 [[#265](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/265)]
+- fix(deps): update module github.com/urfave/cli/v3 to v3.3.8 [[#262](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/262)]
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.16.2 [[#261](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/261)]
+- fix(deps): update module github.com/go-git/go-git/v5 to v5.16.1 [[#260](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/260)]
+- chore(deps): update docker docker tag to v28.2.2 [[#259](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/259)]
+- chore(deps): update docker/buildx-bin docker tag to v0.24.0 [[#245](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/245)]
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.18.1 [[#243](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/243)]
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v6 [[#236](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/236)]
+- chore(deps): update docker.io/mstruebing/editorconfig-checker docker tag to v3.3.0 [[#242](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/242)]
+
+### Misc
+
+- chore(deps): update davidanson/markdownlint-cli2 docker tag to v0.18.0 ([0a39185](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/0a39185acaa74762656e29df4ac005ad4994c485))
+- fix(deps): update module github.com/urfave/cli/v3 to v3.3.3 ([5aea281](https://codeberg.org/woodpecker-plugins/docker-buildx/src/commit/5aea281bddfef64a1f27fcd468d8fc2b016f10f9))
+
 ## [6.0.1](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.1) - 2025-05-04
 
 ### ❤️ Thanks to all contributors! ❤️
