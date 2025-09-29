@@ -137,6 +137,13 @@ func TestWriteBuildkitConfig(t *testing.T) {
 			},
 			wantConfig: "[registry]\n[registry.'docker.io']\nmirrors = ['mirror.example.com']\n",
 		},
+		{
+			name: "oci max parallelism configured",
+			envs: map[string]string{
+				"PLUGIN_BUILDKIT_OCI_MAX_PARALLELISM": "4",
+			},
+			wantConfig: "[worker]\n[worker.oci]\nmax-parallelism = 4\n",
+		},
 	}
 
 	for _, tt := range tests {
