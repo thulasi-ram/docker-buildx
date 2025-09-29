@@ -155,7 +155,7 @@ func ensureRepoExists(svc *ecr.ECR, name string, scanOnPush bool) (err error) {
 		}
 	}
 
-	return
+	return err
 }
 
 func updateImageScannningConfig(svc *ecr.ECR, name string, scanOnPush bool) (err error) {
@@ -191,21 +191,21 @@ func getAuthInfo(svc *ecr.ECR) (username, password, registry string, err error) 
 
 	result, err = svc.GetAuthorizationToken(&ecr.GetAuthorizationTokenInput{})
 	if err != nil {
-		return
+		return username, password, registry, err
 	}
 
 	auth := result.AuthorizationData[0]
 	token := *auth.AuthorizationToken
 	decoded, err = base64.StdEncoding.DecodeString(token)
 	if err != nil {
-		return
+		return username, password, registry, err
 	}
 
 	registry = strings.TrimPrefix(*auth.ProxyEndpoint, "https://")
 	creds := strings.Split(string(decoded), ":")
 	username = creds[0]
 	password = creds[1]
-	return
+	return username, password, registry, err
 }
 
 func getECRClient(sess *session.Session, role, externalId string) *ecr.ECR {
