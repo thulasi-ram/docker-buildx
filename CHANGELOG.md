@@ -2,6 +2,33 @@
 
 # Changelog
 
+## [6.0.3](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.3) - 2025-09-29
+
+### ❤️ Thanks to all contributors! ❤️
+
+@woodpecker-bot, @xoxys
+
+### 📦️ Dependency
+
+- fix(deps): update module github.com/stretchr/testify to v1.11.1 [[#287](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/287)]
+- chore(deps): update docker/buildx-bin docker tag to v0.28.0 [[#285](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/285)]
+- chore(deps): update golang docker tag to v1.25 [[#286](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/286)]
+- fix(deps): update module github.com/urfave/cli/v3 to v3.4.1 [[#288](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/288)]
+- chore(deps): update docker.io/mstruebing/editorconfig-checker docker tag to v3.4.0 [[#284](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/284)]
+- chore(deps): update docker docker tag to v28.4.0 [[#283](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/283)]
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.4.0 [[#280](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/280)]
+- fix(deps): update module github.com/aws/aws-sdk-go to v1.55.8 [[#279](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/279)]
+- chore(deps): update docker docker tag to v28.3.3 [[#278](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/278)]
+- chore(deps): update docker docker tag to v28.3.2 [[#274](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/274)]
+- chore(deps): update docker/buildx-bin docker tag to v0.26.1 [[#277](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/277)]
+- chore(deps): update docker.io/woodpeckerci/plugin-ready-release-go docker tag to v3.3.0 [[#273](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/273)]
+- chore(deps): update woodpeckerci/plugin-docker-buildx docker tag to v6.0.2 [[#271](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/271)]
+- chore(deps): update docker docker tag to v28.3.1 [[#270](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/270)]
+
+### Misc
+
+- Add option BUILDKIT_OCI_MAX_PARALLELISM [[#289](https://codeberg.org/woodpecker-plugins/docker-buildx/pulls/289)]
+
 ## [6.0.2](https://codeberg.org/woodpecker-plugins/docker-buildx/releases/tag/v6.0.2) - 2025-06-28
 
 ### ❤️ Thanks to all contributors! ❤️
