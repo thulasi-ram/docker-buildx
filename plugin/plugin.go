@@ -8,24 +8,25 @@ import (
 
 // Daemon defines Docker daemon parameters.
 type Daemon struct {
-	Registry          string   // Docker registry
-	Mirror            string   // Docker registry mirror
-	Insecure          bool     // Docker daemon enable insecure registries
-	StorageDriver     string   // Docker daemon storage driver
-	StoragePath       string   // Docker daemon storage path
-	Disabled          bool     // Docker daemon is disabled (already running)
-	Debug             bool     // Docker daemon started in debug mode
-	Bip               string   // Docker daemon network bridge IP address
-	DNS               []string // Docker daemon dns server
-	DNSSearch         []string // Docker daemon dns search domain
-	MTU               string   // Docker daemon mtu setting
-	IPv6              bool     // Docker daemon IPv6 networking
-	Experimental      bool     // Docker daemon enable experimental mode
-	BuildkitConfig    string   // Docker buildkit config
-	BuildkitDriverOpt []string // Docker buildkit driveropt args
-	BuildkitDebug     bool     // Docker buildkit debug setting
-	SshKey            string   // Docker daemon SSH key
-	RemoteBuilders    []string // Remote builders for buildx to use
+	Registry                  string   // Docker registry
+	Mirror                    string   // Docker registry mirror
+	Insecure                  bool     // Docker daemon enable insecure registries
+	StorageDriver             string   // Docker daemon storage driver
+	StoragePath               string   // Docker daemon storage path
+	Disabled                  bool     // Docker daemon is disabled (already running)
+	Debug                     bool     // Docker daemon started in debug mode
+	Bip                       string   // Docker daemon network bridge IP address
+	DNS                       []string // Docker daemon dns server
+	DNSSearch                 []string // Docker daemon dns search domain
+	MTU                       string   // Docker daemon mtu setting
+	IPv6                      bool     // Docker daemon IPv6 networking
+	Experimental              bool     // Docker daemon enable experimental mode
+	BuildkitConfig            string   // Docker buildkit config
+	BuildkitDriverOpt         []string // Docker buildkit driveropt args
+	BuildkitDebug             bool     // Docker buildkit debug setting
+	SSHKey                    string   // Docker daemon SSH key
+	RemoteBuilders            []string // Remote builders for buildx to use
+	BuildkitOCIMaxParallelism int      // OCI worker max parallelism
 }
 
 // Login defines Docker login parameters.
@@ -228,7 +229,7 @@ func (p *Plugin) Flags() []cli.Flag {
 			Name:        "daemon.ssh-key",
 			Sources:     cli.EnvVars("PLUGIN_SSH_KEY", "SSH_KEY"),
 			Usage:       "adds a ssh key to be used by the daemon",
-			Destination: &p.Settings.Daemon.SshKey,
+			Destination: &p.Settings.Daemon.SSHKey,
 		},
 		&cli.StringSliceFlag{
 			Name:        "daemon.remote-builder",
@@ -520,6 +521,12 @@ func (p *Plugin) Flags() []cli.Flag {
 			Sources:     cli.EnvVars("PLUGIN_SBOM"),
 			Usage:       "defines sbom setting",
 			Destination: &p.Settings.Build.Sbom,
+		},
+		&cli.IntFlag{
+			Name:        "buildkit.oci.max-parallelism",
+			Sources:     cli.EnvVars("PLUGIN_BUILDKIT_OCI_MAX_PARALLELISM"),
+			Usage:       "sets the maximum number of parallel build steps for OCI worker",
+			Destination: &p.Settings.Daemon.BuildkitOCIMaxParallelism,
 		},
 	}
 

@@ -36,7 +36,7 @@ To mount custom CA certificates, the Woodpecker env var `WOODPECKER_BACKEND_DOCK
 
 | Settings Name           | Default                       | Description                                        |
 | ----------------------- | ----------------------------- | -------------------------------------------------- |
-| `dry-run`               | `false`                       | disables docker push                               |
+| `dry_run`               | `false`                       | disables docker push                               |
 | `repo`                  | _none_                        | sets repository name for the image (can be a list) |
 | `username`              | _none_                        | sets username to authenticates with                |
 | `password`              | _none_                        | sets password / token to authenticates with        |
@@ -50,8 +50,8 @@ To mount custom CA certificates, the Woodpecker env var `WOODPECKER_BACKEND_DOCK
 | `tag`/`tags`            | _none_                        | sets repository tags to use for the image          |
 | `platforms`             | _none_                        | sets target platform for build                     |
 | `provenance`            | _none_                        | sets provenance for build                          |
-| `remote-builders`       | _none_                        | sets remote builders for build                     |
-| `ssh-key`               | _none_                        | sets an ssh key to connect to remote builders      |
+| `remote_builders`       | _none_                        | sets remote builders for build                     |
+| `ssh_key`               | _none_                        | sets an ssh key to connect to remote builders      |
 
 ## auto_tag
 
@@ -62,7 +62,7 @@ If it's not a tag event, and no default branch, automated tags are skipped.
 ## Examples
 
 ```yaml
-publish-next-agent:
+- name: publish-next-agent
   image: woodpeckerci/plugin-docker-buildx
   settings:
     repo: woodpeckerci/woodpecker-agent
@@ -79,7 +79,7 @@ publish-next-agent:
 ```
 
 ```yaml
-publish:
+- name: publish
   image: woodpeckerci/plugin-docker-buildx
   settings:
     platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x
@@ -92,7 +92,7 @@ publish:
 ```
 
 ```yaml
-docker-build:
+- name: docker-build
   image: woodpeckerci/plugin-docker-buildx
   settings:
     build_args:
@@ -100,7 +100,7 @@ docker-build:
       ARCH: Linux_ARM64
     repo: codeberg.org/${CI_REPO_OWNER}/hello
     registry: codeberg.org
-    dry-run: true
+    dry_run: true
     output: type=oci,dest=${CI_REPO_OWNER}-hello.tar
 ```
 
@@ -120,6 +120,7 @@ docker-build:
 | `experimental`                     | `false`           | enables docker daemon experimental mode                                                                                                              |
 | `debug`                            | `false`           | enables verbose debug mode for the docker daemon                                                                                                     |
 | `daemon_off`                       | `false`           | disables the startup of the docker daemon                                                                                                            |
+| `buildkit_oci_max_parallelism`     | _none_            | maximum number of parallel build steps that can be run at the same time                                                                              |
 | `buildkit_debug`                   | `false`           | enables debug output of buildkit                                                                                                                     |
 | `tags_file`                        | `.tags`           | overrides the `tags` option with values specified in a file. Multiple tags can be specified by separating them with a comma or using new lines       |
 | `context`                          | `.`               | sets the path of the build context to use                                                                                                            |
@@ -209,7 +210,7 @@ variables:
           from_secret: CODEBERG_TOKEN
 
 steps:
-  test:
+  - name: test
     image: woodpeckerci/plugin-docker-buildx:2
     privileged: true
     settings:
@@ -238,7 +239,7 @@ This is to provide better usage of cache and better compatibility with image sto
 
 ```yaml
 steps:
-  build:
+  - name: build
     image: woodpeckerci/plugin-docker-buildx
     settings:
       repo: hari/radiant
@@ -265,7 +266,7 @@ More details can be found [in the docker docs](https://docs.docker.com/build/cac
 
 ```yaml
 steps:
-  build:
+  - name: build
     image: woodpeckerci/plugin-docker-buildx
     settings:
       repo: hari/radiant
@@ -277,11 +278,11 @@ steps:
 ## Using remote builders
 
 When building for multiple platforms, you might want to offload some builds to a remote server, to avoid emulation.
-To support this, provide a list build servers to `remote-builders`.
+To support this, provide a list build servers to `remote_builders`.
 These servers will need key authentication, so you will also need to provide a (private) SSH key.
 
 ```yaml
-build:
+- name: build
   image: woodpeckerci/plugin-docker-buildx
   settings:
     platforms: linux/amd64,linux/arm64
@@ -298,7 +299,7 @@ build:
 If you want to mix local and remote builders, the list can include "local":
 
 ```yaml
-build:
+- name: build
   image: woodpeckerci/plugin-docker-buildx
   settings:
     platforms: linux/amd64,linux/arm64

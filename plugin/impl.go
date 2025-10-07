@@ -152,80 +152,97 @@ func (p *Plugin) sanitizedUserTags() []string {
 	return tags
 }
 
-type BuildkitConfigTOML struct {
-	Debug    bool                     `toml:"debug,omitempty"` // needs to be public for toml lib to use
-	Registry map[string]*RegistryInfo `toml:"registry,omitempty"`
+type BuildkitConfig struct {
+	Debug bool `toml:"debug,omitempty"`
+
+	Workers struct {
+		OCI OCIConfig `toml:"oci,omitempty"`
+	} `toml:"worker,omitempty"`
+
+	Registries map[string]RegistryConfig `toml:"registry,omitempty"`
 }
 
-type RegistryInfo struct {
+type OCIConfig struct {
+	// MaxParallelism is the maximum number of parallel build steps that can be run at the same time.
+	MaxParallelism int `toml:"max-parallelism"`
+}
+type RegistryConfig struct {
 	Mirrors []string `toml:"mirrors,omitempty"`
-	CA      []string `toml:"ca,omitempty"`
+	RootCAs []string `toml:"ca,omitempty"`
 }
 
 func (p *Plugin) generateBuildkitConfig() error {
-	// no buildkit config, automatically generate buildkit configuration
-	if p.Settings.Daemon.BuildkitConfig == "" {
-
-		cfg := BuildkitConfigTOML{}
-		cfg.Registry = make(map[string]*RegistryInfo)
-
-		if p.Settings.Daemon.BuildkitDebug {
-			cfg.Debug = p.Settings.Daemon.BuildkitDebug
-			logrus.Println("buildkit debug enabled")
+	if p.Settings.Daemon.BuildkitConfig != "" {
+		var existingCfg BuildkitConfig
+		if err := toml.Unmarshal([]byte(p.Settings.Daemon.BuildkitConfig), &existingCfg); err != nil {
+			return fmt.Errorf("invalid buildkit config: %w", err)
 		}
+		return nil
+	}
 
-		// use a custom CA certificate for each registry
-		if p.Settings.Daemon.Registry != "" {
-			for _, login := range p.Settings.Logins {
-				if registry := login.Registry; registry != "" {
-					u, err := url.Parse(registry)
-					if err != nil {
-						return fmt.Errorf("could not parse registry address: %s: %v", registry, err)
-					}
-					if u.Host != "" {
-						registry = u.Host
-					}
+	cfg := &BuildkitConfig{}
+	cfg.Registries = make(map[string]RegistryConfig)
 
-					// docker hub fix
-					if registry == "index.docker.io" {
-						registry = "docker.io"
-					}
+	if p.Settings.Daemon.BuildkitDebug {
+		cfg.Debug = p.Settings.Daemon.BuildkitDebug
+		logrus.Println("buildkit debug enabled")
+	}
 
-					caPath := fmt.Sprintf("%s/%s/ca.crt", p.Settings.CustomCertStore, registry)
-					ca, err := os.Open(caPath)
-					if err != nil && !os.IsNotExist(err) {
-						logrus.Warnf("error reading %s: %v", caPath, err)
-					} else if err == nil {
-						if err := ca.Close(); err != nil {
-							return fmt.Errorf("error closing ca file: %v", err)
-						}
-						logrus.Infof("found ca file for '%s' registry", registry)
-						// add registry and ca path to buildkit.toml
-						if cfg.Registry[registry] == nil {
-							cfg.Registry[registry] = new(RegistryInfo)
-						}
-						cfg.Registry[registry].CA = []string{caPath}
-					}
+	// Configure OCI worker max parallelism if set
+	if p.Settings.Daemon.BuildkitOCIMaxParallelism > 0 {
+		cfg.Workers.OCI.MaxParallelism = p.Settings.Daemon.BuildkitOCIMaxParallelism
+		logrus.Printf("OCI worker max parallelism set to %d", p.Settings.Daemon.BuildkitOCIMaxParallelism)
+	}
 
-					if len(login.Mirrors) != 0 {
-						if cfg.Registry[registry] == nil {
-							cfg.Registry[registry] = new(RegistryInfo)
-						}
-						cfg.Registry[registry].Mirrors = login.Mirrors
+	// use a custom CA certificate for each registry
+	if p.Settings.Daemon.Registry != "" {
+		for _, login := range p.Settings.Logins {
+			if registry := login.Registry; registry != "" {
+				u, err := url.Parse(registry)
+				if err != nil {
+					return fmt.Errorf("could not parse registry address: %s: %v", registry, err)
+				}
+				if u.Host != "" {
+					registry = u.Host
+				}
+
+				// docker hub fix
+				if registry == "index.docker.io" {
+					registry = "docker.io"
+				}
+
+				caPath := fmt.Sprintf("%s/%s/ca.crt", p.Settings.CustomCertStore, registry)
+				ca, err := os.Open(caPath)
+				if err != nil && !os.IsNotExist(err) {
+					logrus.Warnf("error reading %s: %v", caPath, err)
+				} else if err == nil {
+					if err := ca.Close(); err != nil {
+						return fmt.Errorf("error closing ca file: %v", err)
 					}
+					logrus.Infof("found ca file for '%s' registry", registry)
+					// add registry and ca path to buildkit.toml
+					// Get the current registry config or create a new one
+					regConfig := cfg.Registries[registry]
+					regConfig.RootCAs = []string{caPath}
+					cfg.Registries[registry] = regConfig
+				}
+
+				if len(login.Mirrors) != 0 {
+					// Get the current registry config or create a new one
+					regConfig := cfg.Registries[registry]
+					regConfig.Mirrors = login.Mirrors
+					cfg.Registries[registry] = regConfig
 				}
 			}
 		}
-
-		if cfg.Debug || len(cfg.Registry) > 0 {
-			tomlData, err := toml.Marshal(cfg)
-			if err != nil {
-				return fmt.Errorf("error marshaling buildkit.toml: %s", err)
-			} else {
-				p.Settings.Daemon.BuildkitConfig = string(tomlData)
-			}
-		}
 	}
+
+	tomlData, err := toml.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("error marshaling buildkit.toml: %s", err)
+	}
+
+	p.Settings.Daemon.BuildkitConfig = string(tomlData)
 
 	return nil
 }
@@ -259,7 +276,11 @@ func addToKnownHosts(host string) error {
 	if err != nil {
 		return fmt.Errorf("error opening known_hosts file: %s", err)
 	}
-	defer khFile.Close()
+	defer func() {
+		if err := khFile.Close(); err != nil {
+			logrus.Warnf("error closing known_hosts file: %v", err)
+		}
+	}()
 
 	cmd := exec.Command("/usr/bin/ssh-keyscan", host)
 	cmd.Stdout = khFile
@@ -344,18 +365,18 @@ func (p *Plugin) Execute(ctx context.Context) error {
 	addProxyBuildArgs(&p.Settings.Build)
 
 	// add optional SSH key
-	if p.Settings.Daemon.SshKey != "" {
+	if p.Settings.Daemon.SSHKey != "" {
 		if err := os.MkdirAll("/root/.ssh", 0o700); err != nil {
 			return fmt.Errorf("error creating /root/.ssh dir: %s", err)
 		}
 		// make sure the key ends with a newline
-		if !strings.HasSuffix(p.Settings.Daemon.SshKey, "\n") {
-			p.Settings.Daemon.SshKey = strings.Join(
-				append(strings.Split(p.Settings.Daemon.SshKey, "\n"), "\n"),
+		if !strings.HasSuffix(p.Settings.Daemon.SSHKey, "\n") {
+			p.Settings.Daemon.SSHKey = strings.Join(
+				append(strings.Split(p.Settings.Daemon.SSHKey, "\n"), "\n"),
 				"\n",
 			)
 		}
-		if err := os.WriteFile("/root/.ssh/id_rsa", []byte(p.Settings.Daemon.SshKey), 0o600); err != nil {
+		if err := os.WriteFile("/root/.ssh/id_rsa", []byte(p.Settings.Daemon.SSHKey), 0o600); err != nil {
 			return fmt.Errorf("error writing SSH key: %s", err)
 		}
 	}

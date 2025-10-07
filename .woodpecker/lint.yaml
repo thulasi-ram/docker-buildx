@@ -24,12 +24,12 @@ steps:
 
   lint-editorconfig:
     depends_on: []
-    image: docker.io/mstruebing/editorconfig-checker:v3.3.0
+    image: docker.io/mstruebing/editorconfig-checker:v3.4.0
     when:
       event: pull_request
 
   lint-format:
-    image: golang:1.24
+    image: golang:1.25
     depends_on: []
     commands: make formatcheck
     when:
