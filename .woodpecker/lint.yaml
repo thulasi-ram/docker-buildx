@@ -15,7 +15,7 @@ steps:
       path: "Dockerfile"
 
   lint-markdown:
-    image: davidanson/markdownlint-cli2:v0.18.1
+    image: davidanson/markdownlint-cli2:v0.19.1
     depends_on: []
     commands:
       - "markdownlint-cli2 *.{md,markdown}"
@@ -24,7 +24,7 @@ steps:
 
   lint-editorconfig:
     depends_on: []
-    image: docker.io/mstruebing/editorconfig-checker:v3.4.1
+    image: docker.io/mstruebing/editorconfig-checker:v3.5.0
     when:
       event: pull_request
 
