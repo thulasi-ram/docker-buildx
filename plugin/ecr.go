@@ -86,6 +86,7 @@ func (p *Plugin) EcrInit() {
 	if err != nil {
 		log.Fatalf("error getting ECR auth: %v", err)
 	}
+	log.Printf("ECR auth info: %s %s %s", username, password, registry)
 
 	if registry != ecr_login.Registry {
 		// This is because ecr.GetAuthorizationToken deprecated passing registry id
