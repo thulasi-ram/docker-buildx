@@ -81,8 +81,10 @@ func (p *Plugin) EcrInit() {
 		log.Fatalf("error creating aws session: %v", err)
 	}
 
+	registryId := strings.Split(ecr_login.Registry, ".")[0]
+
 	svc := getECRClient(sess, assumeRole, externalID)
-	username, password, registry, err := getAuthInfo(svc)
+	username, password, registry, err := getAuthInfo(svc, registryId)
 	if err != nil {
 		log.Fatalf("error getting ECR auth: %v", err)
 	}
@@ -193,11 +195,16 @@ func uploadRepositoryPolicy(svc *ecr.ECR, repositoryPolicy, name string) (err er
 	return err
 }
 
-func getAuthInfo(svc *ecr.ECR) (username, password, registry string, err error) {
+func getAuthInfo(svc *ecr.ECR, registryId string) (username, password, registry string, err error) {
 	var result *ecr.GetAuthorizationTokenOutput
 	var decoded []byte
 
-	result, err = svc.GetAuthorizationToken(&ecr.GetAuthorizationTokenInput{})
+	input := &ecr.GetAuthorizationTokenInput{}
+	if registryId != "" {
+		input.SetRegistryIds([]*string{&registryId})
+	}
+
+	result, err = svc.GetAuthorizationToken(input)
 	if err != nil {
 		return username, password, registry, err
 	}
