@@ -86,7 +86,12 @@ func (p *Plugin) EcrInit() {
 		log.Fatalf("error getting ECR auth: %v", err)
 	}
 
-	if !strings.HasPrefix(repo, registry) {
+	if registry != ecr_login.Registry {
+		// This is because ecr.GetAuthorizationToken deprecated passing registry id
+		log.Printf("ECR registry does not match login registry. Expected %s, got %s. Proceeding with specified registry.", ecr_login.Registry, registry)
+	}
+
+	if !strings.HasPrefix(repo, ecr_login.Registry) {
 		repo = fmt.Sprintf("%s/%s", registry, repo)
 	}
 
