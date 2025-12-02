@@ -62,6 +62,7 @@ func (p *Plugin) EcrInit() {
 	} else {
 		ecr_login.Aws_access_key_id = p.Settings.AwsAccessKeyId
 		ecr_login.Aws_secret_access_key = p.Settings.AwsSecretAccessKey
+		ecr_login.Registry = p.Settings.DefaultLogin.Registry
 		aws_region = p.Settings.AwsRegion
 		repo = p.Settings.Build.Repo[0]
 
@@ -89,9 +90,10 @@ func (p *Plugin) EcrInit() {
 	if registry != ecr_login.Registry {
 		// This is because ecr.GetAuthorizationToken deprecated passing registry id
 		log.Printf("ECR registry does not match login registry. Expected %s, got %s. Proceeding with specified registry.", ecr_login.Registry, registry)
+		registry = ecr_login.Registry
 	}
 
-	if !strings.HasPrefix(repo, ecr_login.Registry) {
+	if !strings.HasPrefix(repo, registry) {
 		repo = fmt.Sprintf("%s/%s", registry, repo)
 	}
 
