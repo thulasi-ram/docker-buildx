@@ -28,7 +28,7 @@ func commandLogin(login Login) *exec.Cmd {
 		fmt.Printf("Logging in with email '%s'", login.Email)
 		return commandLoginEmail(login)
 	}
-	fmt.Printf("Logging in with username '%s' to registry '%s' password %s'", login.Username, login.Registry, login.Password)
+	fmt.Printf("Logging in with username '%s' to registry '%s' password length %d'", login.Username, login.Registry, len(login.Password))
 	return exec.Command(
 		dockerExe, "login",
 		"-u", login.Username,

@@ -63,37 +63,32 @@ func (p *Plugin) EcrInit() {
 		ecr_login.Aws_access_key_id = p.Settings.AwsAccessKeyId
 		ecr_login.Aws_secret_access_key = p.Settings.AwsSecretAccessKey
 		ecr_login.Registry = p.Settings.DefaultLogin.Registry
-		aws_region = p.Settings.AwsRegion
 		repo = p.Settings.Build.Repo[0]
-
-		// set the region
-		if aws_region == "" {
-			aws_region = DefaultRegion
-		}
 
 		_ = os.Setenv("AWS_REGION", p.Settings.AwsRegion)
 		_ = os.Setenv("AWS_ACCESS_KEY_ID", p.Settings.AwsAccessKeyId)
 		_ = os.Setenv("AWS_SECRET_ACCESS_KEY", p.Settings.AwsSecretAccessKey)
+
+		if os.Getenv("AWS_DEFAULT_REGION") == "" {
+			_ = os.Setenv("AWS_DEFAULT_REGION", DefaultRegion)
+		}
 	}
 	// here the env vars are used for authentication
-	sess, err := session.NewSession(&aws.Config{Region: &aws_region})
+	sess, err := session.NewSession(&aws.Config{})
 	if err != nil {
 		log.Fatalf("error creating aws session: %v", err)
 	}
 
-	registryId := strings.Split(ecr_login.Registry, ".")[0]
-
 	svc := getECRClient(sess, assumeRole, externalID)
-	username, password, registry, err := getAuthInfo(svc, registryId)
+	username, password, defaultRegistry, err := getAuthInfo(svc)
 	if err != nil {
 		log.Fatalf("error getting ECR auth: %v", err)
 	}
-	log.Printf("ECR auth info: %s %s %s", username, password, registry)
+	log.Printf("ECR auth info: Username: %s, Password Length: %d, Registry: %s", username, len(password), registry)
 
-	if registry != ecr_login.Registry {
-		// This is because ecr.GetAuthorizationToken deprecated passing registry id
-		log.Printf("ECR registry does not match login registry. Expected %s, got %s. Proceeding with specified registry.", ecr_login.Registry, registry)
-		registry = ecr_login.Registry
+	registry := ecr_login.Registry
+	if registry == "" {
+		registry = defaultRegistry
 	}
 
 	if !strings.HasPrefix(repo, registry) {
@@ -195,16 +190,11 @@ func uploadRepositoryPolicy(svc *ecr.ECR, repositoryPolicy, name string) (err er
 	return err
 }
 
-func getAuthInfo(svc *ecr.ECR, registryId string) (username, password, registry string, err error) {
+func getAuthInfo(svc *ecr.ECR) (username, password, registry string, err error) {
 	var result *ecr.GetAuthorizationTokenOutput
 	var decoded []byte
 
-	input := &ecr.GetAuthorizationTokenInput{}
-	if registryId != "" {
-		input.SetRegistryIds([]*string{&registryId})
-	}
-
-	result, err = svc.GetAuthorizationToken(input)
+	result, err = svc.GetAuthorizationToken(&ecr.GetAuthorizationTokenInput{})
 	if err != nil {
 		return username, password, registry, err
 	}
