@@ -84,7 +84,7 @@ func (p *Plugin) EcrInit() {
 	if err != nil {
 		log.Fatalf("error getting ECR auth: %v", err)
 	}
-	log.Printf("ECR auth info: Username: %s, Password Length: %d, Registry: %s", username, len(password), registry)
+	log.Printf("ECR auth info: Username: %s, Password Length: %d, Registry(default): %s", username, len(password), defaultRegistry)
 
 	registry := ecr_login.Registry
 	if registry == "" {
