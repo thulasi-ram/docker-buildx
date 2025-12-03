@@ -48,11 +48,6 @@ func (p *Plugin) EcrInit() {
 				// Join the filtered substrings into a comma-separated string
 				repo = strings.Join(filtered, ",")
 
-				// set the region
-				if aws_region == "" {
-					aws_region = DefaultRegion
-				}
-
 				_ = os.Setenv("AWS_REGION", aws_region)
 				_ = os.Setenv("AWS_ACCESS_KEY_ID", ecr_login.Aws_access_key_id)
 				_ = os.Setenv("AWS_SECRET_ACCESS_KEY", ecr_login.Aws_secret_access_key)
@@ -68,13 +63,16 @@ func (p *Plugin) EcrInit() {
 		_ = os.Setenv("AWS_REGION", p.Settings.AwsRegion)
 		_ = os.Setenv("AWS_ACCESS_KEY_ID", p.Settings.AwsAccessKeyId)
 		_ = os.Setenv("AWS_SECRET_ACCESS_KEY", p.Settings.AwsSecretAccessKey)
-
-		if os.Getenv("AWS_DEFAULT_REGION") == "" {
-			_ = os.Setenv("AWS_DEFAULT_REGION", DefaultRegion)
-		}
 	}
+
+	if os.Getenv("AWS_DEFAULT_REGION") == "" {
+		_ = os.Setenv("AWS_DEFAULT_REGION", DefaultRegion)
+	}
+
 	// here the env vars are used for authentication
-	sess, err := session.NewSession(&aws.Config{})
+	sess, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	})
 	if err != nil {
 		log.Fatalf("error creating aws session: %v", err)
 	}
